@@ -8,7 +8,7 @@
 
 I tend to make _lots_ of small projects. Utilities, gems, modules, websites, services - everything. And every language and framework requires a different project file structure, meaning that in order to even build "hello world" you need to bear a lot of project-specific file structures and contents in mind. `wisk` allows you to build a skeleton _once_, then reuse it to speed up the creation of new projects.
 
-`wisk` makes more of a different with more complex templates. Your company probably makes projects with very common dependencies, patterns, names, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting without using a skeleton project.
+`wisk` makes more of a difference with more complex templates. Your company probably makes projects with very common dependencies, patterns, names, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting without using a skeleton project. With `wisk`, you  can make a single skeleton with all of the dependencies, structure, conventions, and written once, and used to generate many projects.
 
 ###Will this work for my favorite language?
 
@@ -16,15 +16,15 @@ Probably! `wisk` can generate projects for anything that uses text files as its 
 
 The only case in which `wisk` will not work is for project with specific proprietary mechanisms for creating projects; such as anything .NET-related. If you want `wisk` to work with something like that, you're better off upgrading to a modern technology, or asking your vendor to support modern development workflows.
 
-###How do I used it?
+###How do I use it?
 
 `wisk` takes the path of a skeleton project, and the desired output path, and copies the files from the skeleton to the output, like so.
 
-    wisk./skeleton ./cool_project
+    wisk ./skeleton ./cool_project
 
 If no parameters are given or used, this is equivalent to a `cp` operation. However, `wisk`'s strength is that it can substitute placeholders with parameters. For instance;
 
-    wisk-p "project.name=fooject" ./skeleton ./cool_project
+    wisk -p "project.name=fooject" ./skeleton ./cool_project
 
 Any placeholders named "project.name" will be replaced by "fooject" in the contents of any file, any file name, or any folder name. So, for instance, in a skeleton file whose contents look like:
 
@@ -58,11 +58,21 @@ Afterwards, you can use that same template by name. For example;
 
 Which uses the "skeleton" template (as it was defined when you used the `-a` flag) as the template for "cool_project".
 
+After registration, you can list all registered project skeletons by using the `-l` flag, like so;
+
+    wisk -l
+
 ###How do I know what parameters a skeleton accepts?
 
 Running `wisk` with the "-i" flag will inspect the given skeleton, and print out a list of all parameters used by it. Like so;
 
     wisk -i ./skeleton
+
+This flag works with any valid skeleton, including directories, archives, and registered skeletons. So all of the following work the same (assuming they all exist);
+
+    wisk -i ./skeleton
+    wisk -i ./skeleton.zip
+    wisk -i skeleton
 
 ###Can I run a script after wisking a new project?
 
