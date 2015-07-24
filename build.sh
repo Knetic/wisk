@@ -60,6 +60,11 @@ export GOOS=linux
 export GOARCH=amd64
 go build -o ./.output/wisk
 
+if [[ "$1" != "package" ]];
+then
+	exit 0
+fi
+
 export GOOS=linux
 export GOARCH=386
 go build -o ./.output/wisk32 .
@@ -71,10 +76,5 @@ go build -o ./.output/wisk.bin .
 export GOOS=windows
 export GOARCH=amd64
 go build -o ./.output/wisk.exe .
-
-if [[ "$1" != "package" ]];
-then
-	exit 0
-fi
 
 package
