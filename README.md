@@ -48,6 +48,16 @@ If a skeleton contains a parameter that is not specified, a warning is printed i
 
 `wisk` will unzip the file to a temporary directory, then generate a new project based on the contents of the archive.
 
+You can also use "registered templates", which are archives stored per-user. These can be used purely by name, eliminating the need to know exactly where the template is stored. To register a template, create a zip archive of the templat, then use the `-a` flag, like so;
+
+    wisk -a ./skeleton.zip
+
+Afterwards, you can use that same template by name. For example;
+
+    wisk skeleton ./cool_project
+
+Which uses the "skeleton" template (as it was defined when you used the `-a` flag) as the template for "cool_project".
+
 ###How do I know what parameters a skeleton accepts?
 
 Running `wisk` with the "-i" flag will inspect the given skeleton, and print out a list of all parameters used by it. Like so;
