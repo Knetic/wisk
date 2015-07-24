@@ -91,23 +91,15 @@ func (this TemplateRegistry) IsPathRegistry(path string) bool {
 */
 func (this TemplateRegistry) GetTemplatePath(name string) (string, error) {
 
-  var path, tempDir string
-  var err error
+  var path string
 
   if(!this.Contains(name)) {
     errorMsg := fmt.Sprintf("Cannot find any template by the name '%s'\n", name)
     return "", errors.New(errorMsg)
   }
 
-  tempDir, err = ioutil.TempDir("", "")
-  if(err != nil) {
-    return "", err
-  }
-
-  path = fmt.Sprintf("%s%s%s.zip", this.path, string(os.PathSeparator), name)
-
-  Unzip(path, tempDir)
-  return tempDir, nil
+  path = (this.path + name + ".zip")
+  return filepath.Abs(path)
 }
 
 /*

@@ -46,7 +46,6 @@ func NewTemplatedProject(path string) (*TemplatedProject, error) {
 			return nil, err
 		}
 
-		fmt.Printf("Unzipping to %s\n", tempDir)
 		Unzip(path, tempDir)
 		return createTemplatedProjectFromFile(tempDir)
 	}
@@ -95,6 +94,12 @@ func (this TemplatedProject) GenerateAt(targetPath string, parameters map[string
 
 		inputPath = (this.rootDirectory + file.path)
 		outputPath = this.replaceStringParameters(outputPath, parameters)
+
+		if(strings.HasSuffix(outputPath, "/")) {
+			fmt.Printf("Could not create file at '%s<empty file name>', because the file name is empty.\n", outputPath)
+			continue
+		}
+
 		err = this.replaceFileContents(inputPath, outputPath, file.mode, parameters)
 
 		if err != nil {
