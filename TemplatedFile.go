@@ -1,18 +1,16 @@
 package main
 
 import (
-
-  "strings"
-  "os"
+	"os"
+	"strings"
 )
 
 /*
   Represents a single file that is part of a project skeleton.
 */
 type TemplatedFile struct {
-
-  path string
-  mode os.FileMode
+	path string
+	mode os.FileMode
 }
 
 /*
@@ -21,10 +19,10 @@ type TemplatedFile struct {
 */
 func NewTemplatedFile(path string, root string, info os.FileInfo) TemplatedFile {
 
-  var ret TemplatedFile
+	var ret TemplatedFile
 
-  ret.path = strings.Replace(path, root, "", -1)
-  ret.mode = info.Mode()
+	ret.path = strings.Replace(path, root, "", -1)
+	ret.mode = info.Mode()
 
-  return ret
+	return ret
 }

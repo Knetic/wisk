@@ -1,28 +1,26 @@
 package main
 
 import (
-
-  "fmt"
-  "errors"
-  "os"
-  "bytes"
-  "io/ioutil"
-  "strings"
-  "path/filepath"
+	"bytes"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 const (
-  PLACEHOLDER_OPEN = "${{="
-  PLACEHOLDER_CLOSE = "=}}"
+	PLACEHOLDER_OPEN  = "${{="
+	PLACEHOLDER_CLOSE = "=}}"
 )
 
 /*
   Represents an entire skeleton project, capable of generating new projects.
 */
 type TemplatedProject struct {
-
-  files []TemplatedFile
-  rootDirectory string
+	files         []TemplatedFile
+	rootDirectory string
 }
 
 /*
@@ -31,29 +29,29 @@ type TemplatedProject struct {
 */
 func NewTemplatedProject(path string) (*TemplatedProject, error) {
 
-  var ret *TemplatedProject
-  var stat os.FileInfo
-  var err error
+	var ret *TemplatedProject
+	var stat os.FileInfo
+	var err error
 
-  path, err = filepath.Abs(path)
-  if(err != nil) {
-    return nil, err
-  }
+	path, err = filepath.Abs(path)
+	if err != nil {
+		return nil, err
+	}
 
-  stat, err = os.Stat(path)
-  if(err != nil) {
-    return nil, err
-  }
+	stat, err = os.Stat(path)
+	if err != nil {
+		return nil, err
+	}
 
-  if(!stat.IsDir()) {
-    return nil, errors.New("Path is not a directory")
-  }
+	if !stat.IsDir() {
+		return nil, errors.New("Path is not a directory")
+	}
 
-  ret = new(TemplatedProject)
-  ret.rootDirectory = path
+	ret = new(TemplatedProject)
+	ret.rootDirectory = path
 
-  err = filepath.Walk(path, ret.getFolderWalker())
-  return ret, err
+	err = filepath.Walk(path, ret.getFolderWalker())
+	return ret, err
 }
 
 /*
@@ -62,28 +60,28 @@ func NewTemplatedProject(path string) (*TemplatedProject, error) {
 */
 func (this TemplatedProject) GenerateAt(targetPath string, parameters map[string]string) error {
 
-  var file TemplatedFile
-  var inputPath, outputPath string
-  var err error
+	var file TemplatedFile
+	var inputPath, outputPath string
+	var err error
 
-  for _, file = range this.files {
+	for _, file = range this.files {
 
-    outputPath = (targetPath + file.path)
-    outputPath, err = filepath.Abs(outputPath)
-    if(err != nil) {
-      return err
-    }
+		outputPath = (targetPath + file.path)
+		outputPath, err = filepath.Abs(outputPath)
+		if err != nil {
+			return err
+		}
 
-    inputPath = (this.rootDirectory + file.path)
-    outputPath = this.replaceStringParameters(outputPath, parameters)
-    err = this.replaceFileContents(inputPath, outputPath, file.mode, parameters)
+		inputPath = (this.rootDirectory + file.path)
+		outputPath = this.replaceStringParameters(outputPath, parameters)
+		err = this.replaceFileContents(inputPath, outputPath, file.mode, parameters)
 
-    if(err != nil) {
-      return err
-    }
-  }
+		if err != nil {
+			return err
+		}
+	}
 
-  return nil
+	return nil
 }
 
 /*
@@ -91,44 +89,44 @@ func (this TemplatedProject) GenerateAt(targetPath string, parameters map[string
 */
 func (this TemplatedProject) FindParameters() ([]string, error) {
 
-  var parameters StringSet
-  var file TemplatedFile
-  var contentBytes []byte
-  var characters chan rune
-  var inputPath, sequence string
-  var err error
-  var exists bool
+	var parameters StringSet
+	var file TemplatedFile
+	var contentBytes []byte
+	var characters chan rune
+	var inputPath, sequence string
+	var err error
+	var exists bool
 
-  for _, file = range this.files {
+	for _, file = range this.files {
 
-    inputPath = (this.rootDirectory + file.path)
+		inputPath = (this.rootDirectory + file.path)
 
-    contentBytes, err = ioutil.ReadFile(inputPath)
-    if(err != nil) {
-      return nil, err
-    }
+		contentBytes, err = ioutil.ReadFile(inputPath)
+		if err != nil {
+			return nil, err
+		}
 
-    characters = make(chan rune)
-    go readRunes(string(contentBytes), characters)
+		characters = make(chan rune)
+		go readRunes(string(contentBytes), characters)
 
-    for {
+		for {
 
-      sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
-      if(!exists) {
-        break
-      }
+			sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
+			if !exists {
+				break
+			}
 
-      // read a parameter, then replace it.
-      sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
-      if(!exists) {
-        break
-      }
+			// read a parameter, then replace it.
+			sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
+			if !exists {
+				break
+			}
 
-      parameters.Add(sequence)
-    }
-  }
+			parameters.Add(sequence)
+		}
+	}
 
-  return parameters.GetSlice(), nil
+	return parameters.GetSlice(), nil
 }
 
 /*
@@ -138,36 +136,36 @@ func (this TemplatedProject) FindParameters() ([]string, error) {
 */
 func (this TemplatedProject) replaceFileContents(inPath, outPath string, mode os.FileMode, parameters map[string]string) error {
 
-  var contentBytes []byte
-  var contents, path, base string
-  var err error
+	var contentBytes []byte
+	var contents, path, base string
+	var err error
 
-  path, err = filepath.Abs(inPath)
-  if(err != nil) {
-    return err
-  }
+	path, err = filepath.Abs(inPath)
+	if err != nil {
+		return err
+	}
 
-  contentBytes, err = ioutil.ReadFile(path)
-  if(err != nil) {
-    return err
-  }
+	contentBytes, err = ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
 
-  // ensure base path exists
-  base = fmt.Sprintf("%s%s", string(os.PathSeparator), filepath.Base(outPath))
-  index := strings.LastIndex(outPath, base)
-  base = (outPath[0:index])
+	// ensure base path exists
+	base = fmt.Sprintf("%s%s", string(os.PathSeparator), filepath.Base(outPath))
+	index := strings.LastIndex(outPath, base)
+	base = (outPath[0:index])
 
-  err = os.MkdirAll(base, 0755)
-  if(err != nil) {
-    return err
-  }
+	err = os.MkdirAll(base, 0755)
+	if err != nil {
+		return err
+	}
 
-  // write replaced contents
-  contents = string(contentBytes)
-  contents = this.replaceStringParameters(contents, parameters)
+	// write replaced contents
+	contents = string(contentBytes)
+	contents = this.replaceStringParameters(contents, parameters)
 
-  err = ioutil.WriteFile(outPath, []byte(contents), mode)
-  return err
+	err = ioutil.WriteFile(outPath, []byte(contents), mode)
+	return err
 }
 
 /*
@@ -176,57 +174,57 @@ func (this TemplatedProject) replaceFileContents(inPath, outPath string, mode os
 */
 func (this TemplatedProject) replaceStringParameters(input string, parameters map[string]string) string {
 
-  var resultBuffer bytes.Buffer
-  var characters chan rune
-  var sequence string
-  var exists bool
+	var resultBuffer bytes.Buffer
+	var characters chan rune
+	var sequence string
+	var exists bool
 
-  characters = make(chan rune)
-  go readRunes(input, characters)
+	characters = make(chan rune)
+	go readRunes(input, characters)
 
-  for {
+	for {
 
-    sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
-    resultBuffer.WriteString(sequence)
+		sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
+		resultBuffer.WriteString(sequence)
 
-    if(!exists) {
-      break
-    }
+		if !exists {
+			break
+		}
 
-    // read a parameter, then replace it.
-    sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
+		// read a parameter, then replace it.
+		sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
 
-    if(!exists) {
-      resultBuffer.WriteString(PLACEHOLDER_OPEN)
-      resultBuffer.WriteString(sequence)
-      break
-    }
+		if !exists {
+			resultBuffer.WriteString(PLACEHOLDER_OPEN)
+			resultBuffer.WriteString(sequence)
+			break
+		}
 
-    resultBuffer.WriteString(parameters[sequence])
-  }
+		resultBuffer.WriteString(parameters[sequence])
+	}
 
-  return resultBuffer.String()
+	return resultBuffer.String()
 }
 
 /*
   Creates a directory walker that discovers files and appends then into this templatedProject's
   list of files.
 */
-func (this *TemplatedProject) getFolderWalker() (func(string, os.FileInfo, error) error) {
+func (this *TemplatedProject) getFolderWalker() func(string, os.FileInfo, error) error {
 
-  return func(path string, fileStat os.FileInfo, err error) error {
+	return func(path string, fileStat os.FileInfo, err error) error {
 
-    var file TemplatedFile
+		var file TemplatedFile
 
-    if(fileStat.IsDir()) {
-      return nil
-    }
+		if fileStat.IsDir() {
+			return nil
+		}
 
-    file = NewTemplatedFile(path, this.rootDirectory, fileStat)
-    this.files = append(this.files, file)
+		file = NewTemplatedFile(path, this.rootDirectory, fileStat)
+		this.files = append(this.files, file)
 
-    return nil
-  }
+		return nil
+	}
 }
 
 /*
@@ -236,11 +234,11 @@ func (this *TemplatedProject) getFolderWalker() (func(string, os.FileInfo, error
 */
 func readRunes(input string, results chan rune) {
 
-  for _, character := range input {
-    results <- character
-  }
+	for _, character := range input {
+		results <- character
+	}
 
-  close(results)
+	close(results)
 }
 
 /*
@@ -251,28 +249,28 @@ func readRunes(input string, results chan rune) {
 */
 func readUntil(pattern string, characters chan rune) (string, bool) {
 
-  var buffer bytes.Buffer
-  var sequence string
-  var character rune
-  var index int
-  var done bool
+	var buffer bytes.Buffer
+	var sequence string
+	var character rune
+	var index int
+	var done bool
 
-  for {
+	for {
 
-      character, done =<- characters
+		character, done = <-characters
 
-      if(!done) {
-        return buffer.String(), false
-      }
+		if !done {
+			return buffer.String(), false
+		}
 
-      buffer.WriteString(string(character))
-      sequence = buffer.String()
-      index = strings.LastIndex(sequence, pattern)
+		buffer.WriteString(string(character))
+		sequence = buffer.String()
+		index = strings.LastIndex(sequence, pattern)
 
-      if(index >= 0) {
+		if index >= 0 {
 
-        // remove pattern from sequence
-        return sequence[0:index], true
-      }
-  }
+			// remove pattern from sequence
+			return sequence[0:index], true
+		}
+	}
 }

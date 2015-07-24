@@ -4,8 +4,7 @@ package main
   Represents a distinct set of strings.
 */
 type StringSet struct {
-
-  values []string
+	values []string
 }
 
 /*
@@ -13,9 +12,9 @@ type StringSet struct {
 */
 func (this *StringSet) Add(item string) {
 
-  if(!this.Contains(item)) {
-    this.values = append(this.values, item)
-  }
+	if !this.Contains(item) {
+		this.values = append(this.values, item)
+	}
 }
 
 /*
@@ -23,19 +22,19 @@ func (this *StringSet) Add(item string) {
 */
 func (this StringSet) Contains(item string) bool {
 
-  for _, extant := range this.values {
+	for _, extant := range this.values {
 
-    if(extant == item) {
-      return true
-    }
-  }
+		if extant == item {
+			return true
+		}
+	}
 
-  return false
+	return false
 }
 
 /*
   Returns a slice representing all items contained by this set.
 */
 func (this StringSet) GetSlice() []string {
-  return this.values
+	return this.values
 }
