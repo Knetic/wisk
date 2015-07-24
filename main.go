@@ -9,6 +9,7 @@ func main() {
 
   var project *TemplatedProject
   var settings RunSettings
+  var parameters []string
   var err error
 
   settings, err = FindRunSettings()
@@ -23,6 +24,23 @@ func main() {
     return
   }
 
+  // inspect only?
+  if(settings.inspectionRun) {
+
+    parameters, err = project.FindParameters()
+
+    if(err != nil) {
+      exitWith("Unable to inspect skeleton: %s\n", err, 1)
+      return
+    }
+
+    for _, parameter := range parameters {
+      fmt.Println(parameter)
+    }
+    return
+  }
+
+  // generate a project
   err = project.GenerateAt(settings.targetPath, settings.parameters)
   if(err != nil) {
     exitWith("Unable to generate project: %s\n", err, 1)

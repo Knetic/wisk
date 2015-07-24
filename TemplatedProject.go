@@ -79,6 +79,51 @@ func (this TemplatedProject) GenerateAt(targetPath string, parameters map[string
   return nil
 }
 
+/*
+  Returns a deduplicated list of all parameters used by this skeleton.
+*/
+func (this TemplatedProject) FindParameters() ([]string, error) {
+
+  var parameters StringSet
+  var file TemplatedFile
+  var contentBytes []byte
+  var characters chan rune
+  var inputPath, sequence string
+  var err error
+  var exists bool
+
+  for _, file = range this.files {
+
+    inputPath = (this.rootDirectory + file.path)
+
+    contentBytes, err = ioutil.ReadFile(inputPath)
+    if(err != nil) {
+      return nil, err
+    }
+
+    characters = make(chan rune)
+    go readRunes(string(contentBytes), characters)
+
+    for {
+
+      sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
+      if(!exists) {
+        break
+      }
+
+      // read a parameter, then replace it.
+      sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
+      if(!exists) {
+        break
+      }
+
+      parameters.Add(sequence)
+    }
+  }
+
+  return parameters.GetSlice(), nil
+}
+
 func (this TemplatedProject) replaceFileContents(inPath, outPath string, mode os.FileMode, parameters map[string]string) error {
 
   var contentBytes []byte
