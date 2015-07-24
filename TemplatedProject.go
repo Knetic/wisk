@@ -13,6 +13,7 @@ import (
 const (
 	PLACEHOLDER_OPEN  = "${{="
 	PLACEHOLDER_CLOSE = "=}}"
+	archiveMarker			= ".zip"
 )
 
 /*
@@ -29,14 +30,34 @@ type TemplatedProject struct {
 */
 func NewTemplatedProject(path string) (*TemplatedProject, error) {
 
-	var ret *TemplatedProject
-	var stat os.FileInfo
+	var tempDir string
 	var err error
 
 	path, err = filepath.Abs(path)
 	if err != nil {
 		return nil, err
 	}
+
+	// extract archive to temporary directory, then read it.
+	if(strings.HasSuffix(path, archiveMarker)) {
+
+		tempDir, err = ioutil.TempDir("", "")
+		if(err != nil) {
+			return nil, err
+		}
+
+		fmt.Printf("Unzipping to %s\n", tempDir)
+		Unzip(path, tempDir)
+		return createTemplatedProjectFromFile(tempDir)
+	}
+	return createTemplatedProjectFromFile(path)
+}
+
+func createTemplatedProjectFromFile(path string) (*TemplatedProject, error) {
+
+	var ret *TemplatedProject
+	var stat os.FileInfo
+	var err error
 
 	stat, err = os.Stat(path)
 	if err != nil {
