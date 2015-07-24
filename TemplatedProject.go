@@ -16,12 +16,19 @@ const (
   PLACEHOLDER_CLOSE = "=}}"
 )
 
+/*
+  Represents an entire skeleton project, capable of generating new projects.
+*/
 type TemplatedProject struct {
 
   files []TemplatedFile
   rootDirectory string
 }
 
+/*
+  Creates a new skeleton project rooted at the given [path].
+  Every file below that path (of any size or location) is included.
+*/
 func NewTemplatedProject(path string) (*TemplatedProject, error) {
 
   var ret *TemplatedProject
@@ -124,6 +131,11 @@ func (this TemplatedProject) FindParameters() ([]string, error) {
   return parameters.GetSlice(), nil
 }
 
+/*
+  Reads the contents of the file at [inPath], replaces placeholders with the given [parameters],
+  then writes the results to the given [outPath] (with the given [mode]).
+  Any directories that do not exist in the [outPath] tree will be created.
+*/
 func (this TemplatedProject) replaceFileContents(inPath, outPath string, mode os.FileMode, parameters map[string]string) error {
 
   var contentBytes []byte
@@ -158,6 +170,10 @@ func (this TemplatedProject) replaceFileContents(inPath, outPath string, mode os
   return err
 }
 
+/*
+  Replaces all placeholders in the given [input] with their equivalent values in [parameters],
+  returning the resultant string.
+*/
 func (this TemplatedProject) replaceStringParameters(input string, parameters map[string]string) string {
 
   var resultBuffer bytes.Buffer
@@ -192,6 +208,10 @@ func (this TemplatedProject) replaceStringParameters(input string, parameters ma
   return resultBuffer.String()
 }
 
+/*
+  Creates a directory walker that discovers files and appends then into this templatedProject's
+  list of files.
+*/
 func (this *TemplatedProject) getFolderWalker() (func(string, os.FileInfo, error) error) {
 
   return func(path string, fileStat os.FileInfo, err error) error {
@@ -209,6 +229,11 @@ func (this *TemplatedProject) getFolderWalker() (func(string, os.FileInfo, error
   }
 }
 
+/*
+  Reads all runes individually from the given [input],
+  writing each of them into the given [results] channel.
+  Closes the channel after all runes have been read.
+*/
 func readRunes(input string, results chan rune) {
 
   for _, character := range input {

@@ -7,6 +7,9 @@ import (
   "strings"
 )
 
+/*
+  Represents arguments given by the user to this program.
+*/
 type RunSettings struct {
 
   parameters map[string]string
@@ -17,6 +20,9 @@ type RunSettings struct {
   inspectionRun bool
 }
 
+/*
+  Parses runtime flags and positional arguments, returning the result.
+*/
 func FindRunSettings() (RunSettings, error) {
 
   var ret RunSettings
