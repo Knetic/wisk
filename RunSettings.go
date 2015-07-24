@@ -64,6 +64,11 @@ func parseParameters(parameterGroup string) (map[string]string, error) {
   }
 
   groups = strings.Split(parameterGroup, ";")
+  if(len(groups) == 0) {
+    groups = []string {
+      parameterGroup,
+    }
+  }
 
   for _, group := range groups {
 

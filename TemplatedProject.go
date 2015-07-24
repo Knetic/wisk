@@ -11,6 +11,11 @@ import (
   "path/filepath"
 )
 
+const (
+  PLACEHOLDER_OPEN = "${{="
+  PLACEHOLDER_CLOSE = "=}}"
+)
+
 type TemplatedProject struct {
 
   files []TemplatedFile
@@ -119,7 +124,7 @@ func (this TemplatedProject) replaceStringParameters(input string, parameters ma
 
   for {
 
-    sequence, exists = readUntil("${{=", characters)
+    sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
     resultBuffer.WriteString(sequence)
 
     if(!exists) {
@@ -127,10 +132,10 @@ func (this TemplatedProject) replaceStringParameters(input string, parameters ma
     }
 
     // read a parameter, then replace it.
-    sequence, exists = readUntil("=}}", characters)
+    sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
 
     if(!exists) {
-      resultBuffer.WriteString("${{=")
+      resultBuffer.WriteString(PLACEHOLDER_OPEN)
       resultBuffer.WriteString(sequence)
       break
     }
@@ -178,6 +183,7 @@ func readUntil(pattern string, characters chan rune) (string, bool) {
   var buffer bytes.Buffer
   var sequence string
   var character rune
+  var index int
   var done bool
 
   for {
@@ -190,9 +196,12 @@ func readUntil(pattern string, characters chan rune) (string, bool) {
 
       buffer.WriteString(string(character))
       sequence = buffer.String()
+      index = strings.LastIndex(sequence, pattern)
 
-      if(strings.LastIndex(sequence, pattern) >= 0) {
-        return sequence, true
+      if(index >= 0) {
+
+        // remove pattern from sequence
+        return sequence[0:index], true
       }
   }
 }

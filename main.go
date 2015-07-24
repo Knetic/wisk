@@ -23,7 +23,7 @@ func main() {
     return
   }
 
-  err = project.GenerateAt(settings.targetPath, nil)
+  err = project.GenerateAt(settings.targetPath, settings.parameters)
   if(err != nil) {
     exitWith("Unable to generate project: %s\n", err, 1)
     return
