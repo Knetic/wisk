@@ -111,7 +111,7 @@ func (this TemplatedProject) replaceStringParameters(input string, parameters ma
 
   var resultBuffer bytes.Buffer
   var characters chan rune
-  var sequence, parameter string
+  var sequence string
   var exists bool
 
   characters = make(chan rune)
@@ -135,11 +135,7 @@ func (this TemplatedProject) replaceStringParameters(input string, parameters ma
       break
     }
 
-    parameter, exists = parameters[sequence]
-
-    if(exists) {
-      resultBuffer.WriteString(parameter)
-    }
+    resultBuffer.WriteString(parameters[sequence])
   }
 
   return resultBuffer.String()
