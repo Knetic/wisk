@@ -2,6 +2,7 @@ package main
 
 import (
 
+  "fmt"
   "errors"
   "os"
   "bytes"
@@ -49,25 +50,61 @@ func NewTemplatedProject(path string) (*TemplatedProject, error) {
 */
 func (this TemplatedProject) GenerateAt(targetPath string, parameters map[string]string) error {
 
+  var file TemplatedFile
+  var inputPath, outputPath string
+  var err error
+
+  for _, file = range this.files {
+
+    outputPath = (targetPath + file.path)
+    outputPath, err = filepath.Abs(outputPath)
+    if(err != nil) {
+      return err
+    }
+
+    inputPath = (this.rootDirectory + file.path)
+    err = this.replaceFileContents(inputPath, outputPath, file.mode, parameters)
+
+    if(err != nil) {
+      return err
+    }
+  }
+
   return nil
 }
 
-func (this TemplatedProject) replaceFileContents(input TemplatedFile, outPath string, parameters map[string]string) error {
+func (this TemplatedProject) replaceFileContents(inPath, outPath string, mode os.FileMode, parameters map[string]string) error {
 
   var contentBytes []byte
-  var contents string
+  var contents, path, base string
   var err error
 
-  contentBytes, err = ioutil.ReadFile(input.path)
+  path, err = filepath.Abs(inPath)
   if(err != nil) {
     return err
   }
 
+  contentBytes, err = ioutil.ReadFile(path)
+  if(err != nil) {
+    return err
+  }
+
+  // ensure base path exists
+  base = fmt.Sprintf("%s%s", string(os.PathSeparator), filepath.Base(outPath))
+  index := strings.LastIndex(outPath, base)
+  base = (outPath[0:index])
+
+  err = os.MkdirAll(base, 0755)
+  if(err != nil) {
+    return err
+  }
+
+  // write replaced contents
   contents = string(contentBytes)
   contents = this.replaceStringParameters(contents, parameters)
 
-  ioutil.WriteFile(outPath, []byte(contents), input.mode)
-  return nil
+  err = ioutil.WriteFile(outPath, []byte(contents), mode)
+  return err
 }
 
 func (this TemplatedProject) replaceStringParameters(input string, parameters map[string]string) string {

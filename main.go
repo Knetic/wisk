@@ -23,9 +23,11 @@ func main() {
     return
   }
 
-  fmt.Printf("Settings: %v\n", settings)
-
-  project.GenerateAt(settings.targetPath, nil)
+  err = project.GenerateAt(settings.targetPath, nil)
+  if(err != nil) {
+    exitWith("Unable to generate project: %s\n", err, 1)
+    return
+  }
 }
 
 func exitWith(message string, err error, code int) {
