@@ -42,9 +42,7 @@ If a skeleton contains a parameter that is not specified, a warning is printed i
 
 ###How do I make skeletons?
 
-`wisk` accepts any path as a possible skeleton, just make a folder anywhere and `wisk` will use it. However, this makes it a little hard to share skeletons. So `wisk` also accepts a \*.tar.gz archive. Like so;
-
-    wisk ./skeleton.tar.gz ./cool_project
+`wisk` accepts any path as a possible skeleton, just make a folder anywhere and `wisk` will use it.
 
 ###How do I know what parameters a skeleton accepts?
 
