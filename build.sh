@@ -1,10 +1,8 @@
 #!/bin/bash
 
 export GOPATH="$(pwd)"
-export GOOS=linux
-export GOARCH=amd64
 
-function packageDeb() {
+function package() {
 
 	if [ "$(which fpm)" == "" ];
 	then
@@ -23,20 +21,60 @@ function packageDeb() {
 		-n wisk \
 		./.output/wisk=/usr/local/bin/wisk
 
+	fpm \
+		--log error \
+		-s dir \
+		-t deb \
+		-v 1.0 \
+		-n wisk \
+		-a i686 \
+		./.output/wisk32=/usr/local/bin/wisk
+
 	mv ./*.deb ./.output/
+
+	# rpm
+	rm -f ./.output/*.rpm
+
+	fpm \
+		--log error \
+		-s dir \
+		-t rpm \
+		-v 1.0 \
+		-n wisk \
+		./.output/wisk=/usr/local/bin/wisk
+	fpm \
+		--log error \
+		-s dir \
+		-t rpm \
+		-v 1.0 \
+		-n wisk \
+		-a i686 \
+		./.output/wisk32=/usr/local/bin/wisk
+
+	mv ./*.rpm ./.output/
 }
 
-function buildExecutable() {
+go get ./...
 
-  go get ./...
-  go build -o ./.output/wisk .
-}
+export GOOS=linux
+export GOARCH=amd64
+go build -o ./.output/wisk
 
-buildExecutable
+export GOOS=linux
+export GOARCH=386
+go build -o ./.output/wisk32 .
+
+export GOOS=darwin
+export GOARCH=amd64
+go build -o ./.output/wisk.bin .
+
+export GOOS=windows
+export GOARCH=amd64
+go build -o ./.output/wisk.exe .
 
 if [[ "$1" != "package" ]];
 then
 	exit 0
 fi
 
-packageDeb
+package
