@@ -188,15 +188,14 @@ func readUntil(pattern string, characters chan rune) (string, bool) {
 
       character, done =<- characters
 
-      if(done) {
+      if(!done) {
         return buffer.String(), false
       }
 
       buffer.WriteString(string(character))
-
       sequence = buffer.String()
-      if(strings.LastIndex(sequence, pattern) >= 0) {
 
+      if(strings.LastIndex(sequence, pattern) >= 0) {
         return sequence, true
       }
   }
