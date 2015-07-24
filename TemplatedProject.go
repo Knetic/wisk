@@ -68,6 +68,7 @@ func (this TemplatedProject) GenerateAt(targetPath string, parameters map[string
     }
 
     inputPath = (this.rootDirectory + file.path)
+    outputPath = this.replaceStringParameters(outputPath, parameters)
     err = this.replaceFileContents(inputPath, outputPath, file.mode, parameters)
 
     if(err != nil) {
