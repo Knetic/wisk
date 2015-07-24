@@ -8,6 +8,7 @@ import (
 func main() {
 
 	var project *TemplatedProject
+	var registry *TemplateRegistry
 	var settings RunSettings
 	var parameters []string
 	var err error
@@ -16,6 +17,18 @@ func main() {
 	if err != nil {
 		exitWith("Unable to parse run arguments: %s\n", err, 1)
 		return
+	}
+
+	registry = NewTemplateRegistry()
+
+	// is this a registry skeleton?
+	if(registry.IsPathRegistry(settings.skeletonPath) && registry.Contains(settings.skeletonPath)) {
+
+		settings.skeletonPath, err = registry.GetTemplatePath(settings.skeletonPath)
+		if(err != nil) {
+			exitWith("Unable to expand registered template: %s\n", err, 1)
+			return
+		}
 	}
 
 	project, err = NewTemplatedProject(settings.skeletonPath)
