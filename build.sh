@@ -18,8 +18,8 @@ function packageDeb() {
 		-s dir \
 		-t deb \
 		-v 1.0 \
-		-n whisk \
-		./.output/whisk=/usr/local/bin/whisk
+		-n wisk \
+		./.output/wisk=/usr/local/bin/wisk
 
 	mv ./*.deb ./.output/
 }
@@ -27,7 +27,7 @@ function packageDeb() {
 function buildExecutable() {
 
   go get ./...
-  go build -o ./.output/whisk .
+  go build -o ./.output/wisk .
 }
 
 buildExecutable

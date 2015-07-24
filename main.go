@@ -18,7 +18,7 @@ func main() {
     exitWith("Unable to read templated project: %s\n", err, 1)
   }
 
-  fmt.Printf("whisk: %v\n", root)
+  fmt.Printf("wisk: %v\n", root)
 }
 
 func exitWith(message string, err error, code int) {
