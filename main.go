@@ -2,23 +2,30 @@ package main
 
 import (
   "fmt"
-  "flag"
   "os"
 )
 
 func main() {
 
-  var root *TemplatedProject
+  var project *TemplatedProject
+  var settings RunSettings
   var err error
 
-  flag.Parse()
-
-  root, err = NewTemplatedProject(flag.Arg(0))
+  settings, err = FindRunSettings()
   if(err != nil) {
-    exitWith("Unable to read templated project: %s\n", err, 1)
+    exitWith("Unable to parse run arguments: %s\n", err, 1)
+    return
   }
 
-  fmt.Printf("wisk: %v\n", root)
+  project, err = NewTemplatedProject(settings.skeletonPath)
+  if(err != nil) {
+    exitWith("Unable to read templated project: %s\n", err, 1)
+    return
+  }
+
+  fmt.Printf("Settings: %v\n", settings)
+
+  project.GenerateAt(settings.targetPath, nil)
 }
 
 func exitWith(message string, err error, code int) {
