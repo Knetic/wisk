@@ -39,6 +39,11 @@ func NewTemplateRegistry() *TemplateRegistry {
     return ret
   }
 
+  err = os.MkdirAll(ret.path, 0700)
+  if(err != nil) {
+    return ret
+  }
+
   files, err = ioutil.ReadDir(ret.path)
   if(err != nil) {
     return ret
@@ -103,6 +108,27 @@ func (this TemplateRegistry) GetTemplatePath(name string) (string, error) {
 
   Unzip(path, tempDir)
   return tempDir, nil
+}
+
+/*
+  Registers the given [path] in the registry, by copying the archive file to it.
+  If the file is not an archive, or it cannot be read, or the registry cannot be written,
+  an error is returned.
+*/
+func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
+
+  var targetPath, name string
+  var err error
+
+  if(!strings.HasSuffix(path, archiveMarker)) {
+    return "", errors.New("Cannot register a non-zip template\n")
+  }
+
+  name = filepath.Base(path)
+  targetPath = fmt.Sprintf("%s%s%s", this.path, string(os.PathSeparator), name)
+
+  _, err = CopyFile(path, targetPath)
+  return name, err
 }
 
 func getRegistryPath() (string, error) {

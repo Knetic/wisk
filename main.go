@@ -13,9 +13,25 @@ func main() {
 	var parameters []string
 	var err error
 
+	registry = NewTemplateRegistry()
+
 	settings, err = FindRunSettings()
 	if err != nil {
 		exitWith("Unable to parse run arguments: %s\n", err, 1)
+		return
+	}
+
+	// is the user trying to add to the current registry?
+	if(settings.addRegistry) {
+
+		var name string
+
+		name, err = registry.RegisterTemplate(settings.skeletonPath)
+		if(err != nil) {
+			exitWith("Unable to register template: %s\n", err, 1)
+		}
+
+		fmt.Printf("Registered template '%s'\n", name)
 		return
 	}
 

@@ -11,12 +11,14 @@ import (
   Represents arguments given by the user to this program.
 */
 type RunSettings struct {
+
 	parameters map[string]string
 
 	skeletonPath string
 	targetPath   string
 
 	inspectionRun bool
+	addRegistry bool
 }
 
 /*
@@ -30,6 +32,7 @@ func FindRunSettings() (RunSettings, error) {
 
 	flag.StringVar(&parameterGroup, "p", "", "Semicolon-separated list of parameters in k=v form.")
 	flag.BoolVar(&ret.inspectionRun, "i", false, "Whether or not to show a list of available parameters for the skeleton")
+	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path")
 	flag.Parse()
 
 	ret.parameters, err = parseParameters(parameterGroup)
@@ -45,7 +48,7 @@ func FindRunSettings() (RunSettings, error) {
 		return ret, errors.New(errorMsg)
 	}
 
-	if !ret.inspectionRun && ret.targetPath == "" {
+	if !ret.inspectionRun && !ret.addRegistry && ret.targetPath == "" {
 		errorMsg := fmt.Sprintf("Target output path not specified")
 		return ret, errors.New(errorMsg)
 	}
