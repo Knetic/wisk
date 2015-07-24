@@ -1,0 +1,4 @@
+${{=cookbook.name=}}
+====
+
+A cookbook.

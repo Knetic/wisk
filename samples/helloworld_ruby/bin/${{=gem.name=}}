@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require '${{=gem.name=}}'
+require 'pp'
+
+pp "Hello, ${{=gem.name=}}"
