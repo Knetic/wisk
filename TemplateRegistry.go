@@ -131,6 +131,13 @@ func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
   return name, err
 }
 
+/*
+  Returns a slice representing every template in this registry.
+*/
+func (this TemplateRegistry) GetTemplateList() []string {
+  return this.templatePaths.GetSlice()
+}
+
 func getRegistryPath() (string, error) {
 
   var ret string

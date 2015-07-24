@@ -7,10 +7,8 @@ import (
 
 func main() {
 
-	var project *TemplatedProject
 	var registry *TemplateRegistry
 	var settings RunSettings
-	var parameters []string
 	var err error
 
 	registry = NewTemplateRegistry()
@@ -21,21 +19,52 @@ func main() {
 		return
 	}
 
-	// is the user trying to add to the current registry?
-	if(settings.addRegistry) {
+	registry = NewTemplateRegistry()
 
-		var name string
-
-		name, err = registry.RegisterTemplate(settings.skeletonPath)
-		if(err != nil) {
-			exitWith("Unable to register template: %s\n", err, 1)
-		}
-
-		fmt.Printf("Registered template '%s'\n", name)
+	// is the user showing the registry?
+	if(settings.showRegistry) {
+		showRegistry(registry)
 		return
 	}
 
-	registry = NewTemplateRegistry()
+	// is the user trying to add to the current registry?
+	if settings.addRegistry {
+		addRegistry(settings, registry)
+		return
+	}
+
+	createProject(settings, registry)
+}
+
+func showRegistry(registry *TemplateRegistry) {
+
+	for _, template := range registry.GetTemplateList() {
+		fmt.Println(template)
+	}
+}
+
+func addRegistry(settings RunSettings, registry *TemplateRegistry) {
+
+	var name string
+	var err error
+
+	name, err = registry.RegisterTemplate(settings.skeletonPath)
+	if(err != nil) {
+
+		// TODO: I'm deeply uncomfortable with using "exitWith" outside of the actual
+		// main method. This is too easy to let "exiting" become a separate code path.
+		exitWith("Unable to register template: %s\n", err, 1)
+	}
+
+	fmt.Printf("Registered template '%s'\n", name)
+	return
+}
+
+func createProject(settings RunSettings, registry *TemplateRegistry) {
+
+	var project *TemplatedProject
+	var parameters []string
+	var err error
 
 	// is this a registry skeleton?
 	if(registry.IsPathRegistry(settings.skeletonPath) && registry.Contains(settings.skeletonPath)) {
@@ -47,6 +76,7 @@ func main() {
 		}
 	}
 
+	// Create templated project, in preparation for later use
 	project, err = NewTemplatedProject(settings.skeletonPath)
 	if err != nil {
 		exitWith("Unable to read templated project: %s\n", err, 1)

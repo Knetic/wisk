@@ -19,6 +19,7 @@ type RunSettings struct {
 
 	inspectionRun bool
 	addRegistry bool
+	showRegistry bool
 }
 
 /*
@@ -33,6 +34,7 @@ func FindRunSettings() (RunSettings, error) {
 	flag.StringVar(&parameterGroup, "p", "", "Semicolon-separated list of parameters in k=v form.")
 	flag.BoolVar(&ret.inspectionRun, "i", false, "Whether or not to show a list of available parameters for the skeleton")
 	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path")
+	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")
 	flag.Parse()
 
 	ret.parameters, err = parseParameters(parameterGroup)
@@ -43,12 +45,16 @@ func FindRunSettings() (RunSettings, error) {
 	ret.skeletonPath = flag.Arg(0)
 	ret.targetPath = flag.Arg(1)
 
-	if ret.skeletonPath == "" {
+	if !ret.showRegistry && ret.skeletonPath == "" {
 		errorMsg := fmt.Sprintf("Skeleton project path not specified")
 		return ret, errors.New(errorMsg)
 	}
 
-	if !ret.inspectionRun && !ret.addRegistry && ret.targetPath == "" {
+	if !ret.showRegistry &&
+		!ret.inspectionRun &&
+		!ret.addRegistry &&
+		ret.targetPath == "" {
+
 		errorMsg := fmt.Sprintf("Target output path not specified")
 		return ret, errors.New(errorMsg)
 	}
