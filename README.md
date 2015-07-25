@@ -76,11 +76,11 @@ This flag works with any valid skeleton, including directories, archives, and re
 
 ###Can I run a script after wisking a new project?
 
-Absolutely! Use `-s` to specify a post-generation script. Example;
+Absolutely! If the skeleton project contains a file named `_postGenerate.sh` at the top level, then `wisk` will execute that script after generating a project.
 
-    wisk -s ./git_init.sh ./skeleton ./cool_project
+The script's working directory will be set to the generated project's directory.
 
-Where "git_init.sh" is an executable file that is NOT located in a project skeleton.
+Note that this may have security implications. Inspect post-generation scripts created by others before using project skeletons.
 
 ###Branching
 
