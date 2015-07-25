@@ -107,7 +107,7 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 	}
 
 	// if there's a post-generate script (and it's executable), call it.
-	err = executePostGenerate(settings.skeletonPath, settings.targetPath)
+	err = executePostGenerate(project.rootDirectory, settings.targetPath)
 	if(err != nil) {
 		exitWith("Unable to complete post-generation script: %s\n", err, 1)
 		return
