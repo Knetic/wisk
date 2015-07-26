@@ -1,6 +1,6 @@
 language: go
 
+# Executable uses syscall and some file ops that are only properly
+# available in 1.2. 1.1 fails to build, and post-1.4 has trouble with syscall.
 go:
-  - 1.0
-  - 1.1
   - 1.2

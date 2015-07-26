@@ -1,5 +1,6 @@
 #wisk
 
+[![Build Status](https://travis-ci.org/Knetic/wisk.svg?branch=master)](https://travis-ci.org/Knetic/wisk)
 
 `wisk`generates new projects based on a project skeleton. This makes it easy to quickly build new projects without manually creating a lot of boilerplate files and folders.
 
