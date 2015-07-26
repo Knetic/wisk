@@ -71,7 +71,7 @@ go build -o ./.output/wisk32 .
 
 export GOOS=darwin
 export GOARCH=amd64
-go build -o ./.output/wisk.bin .
+go build -o ./.output/wisk_osx .
 
 export GOOS=windows
 export GOARCH=amd64
