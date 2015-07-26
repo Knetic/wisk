@@ -25,6 +25,11 @@ func executePostGenerate(sourcePath string, generatedPath string) error {
 		return err
 	}
 
+  generatedPath, err = filepath.Abs(generatedPath)
+  if(err != nil) {
+    return err
+  }
+
   // file doesn't exist, exit quietly.
   if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
     return nil
@@ -35,7 +40,7 @@ func executePostGenerate(sourcePath string, generatedPath string) error {
 		return err
 	}
 
-	err = os.Chdir(sourcePath)
+	err = os.Chdir(generatedPath)
 	if(err != nil) {
 		return err
 	}
