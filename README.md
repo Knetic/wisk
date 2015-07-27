@@ -6,10 +6,9 @@
 
 ###Why is this useful?
 
-
 I tend to make _lots_ of small projects. Utilities, gems, modules, websites, services - everything. And every language and framework requires a different project file structure, meaning that in order to even build "hello world" you need to bear a lot of project-specific file structures and contents in mind. `wisk` allows you to build a skeleton _once_, then reuse it to speed up the creation of new projects.
 
-`wisk` makes more of a difference with more complex templates. Your company probably makes projects with very common dependencies, patterns, names, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting without using a skeleton project. With `wisk`, you  can make a single skeleton with all of the dependencies, structure, conventions, and written once, and used to generate many projects.
+`wisk` makes more of a difference with more complex templates. Your company probably makes projects with very common dependencies, patterns, names, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting, and probably involves a good amount of copy/paste and crossed fingers. With `wisk`, you can make a single skeleton by writing all of the dependencies, structure, conventions once - then re-using that to generate multiple projects.
 
 ###Will this work for my favorite language?
 
