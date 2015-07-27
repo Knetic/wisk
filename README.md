@@ -8,17 +8,17 @@
 
 I tend to make _lots_ of small projects. Utilities, gems, modules, websites, services - everything. And every language and framework requires a different project file structure, meaning that in order to even build "hello world" you need to bear a lot of project-specific file structures and contents in mind. `wisk` allows you to build a skeleton _once_, then reuse it to speed up the creation of new projects.
 
-`wisk` makes more of a difference with more complex templates. Your company probably makes projects with very common dependencies, patterns, names, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting, and probably involves a good amount of copy/paste and crossed fingers. With `wisk`, you can make a single skeleton by writing all of the dependencies, structure, conventions once - then re-using that to generate multiple projects.
+Your company probably makes projects with very common dependencies, patterns, names, metadata, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting, and probably involves a good amount of copy/paste and crossed fingers. With `wisk`, you can make a single skeleton by writing all of the dependencies, structure and conventions once - then re-using that to generate multiple projects.
 
 ###Will this work for my favorite language?
 
 Probably! `wisk` can generate projects for anything that uses text files as its primary mode of representing project structure and data. I personally use it for Java (both standard and maven projects), Go, ruby, python, and Chef.
 
-The only case in which `wisk` will not work is for project with specific proprietary mechanisms for creating projects; such as anything .NET-related. If you want `wisk` to work with something like that, you're better off upgrading to a modern technology, or asking your vendor to support modern development workflows.
+The only case in which `wisk` will not work is for projects with specific binary-type files involved. If you want `wisk` to work with something like that, you're better off upgrading to a modern technology, or asking your vendor to support modern development workflows.
 
 ###How do I use it?
 
-`wisk` takes the path of a skeleton project, and the desired output path, and copies the files from the skeleton to the output, like so.
+`wisk` takes the path of a skeleton project and the desired output path, then copies the files from the skeleton to the output, like so.
 
     wisk ./skeleton ./cool_project
 
@@ -38,11 +38,17 @@ You can give `wisk` multiple parameters to replace by semicolon-separating them;
 
     wisk -p "project.name=fooject;project.executable=foo" ./skeleton ./cool_project
 
-If a skeleton contains a parameter that is not specified, a warning is printed informing you of that. In that case, the generated project will have all instances of that placeholder replaced with a blank string. This may cause syntax errors, so it's best to always specify every parameter that you need.
+Placeholders can be literally anywhere in a plaintext file. `wisk` doesn't parse the file, it just looks for the placeholder tags. You can use them for classnames, module paths, import statements, variable names, README contents, or 
+
+If a skeleton contains a parameter that is not specified, the generated project will have all instances of that placeholder replaced with a blank string. This may cause syntax errors, so it's best to always specify every parameter that you need. You can inspect the parameters a skeleton supports by using the `-i` flag, like so;
+
+    wisk -i ./skeleton
+    
+This flag works with any valid skeleton, including directories, archives, and registered skeletons.
 
 ###How do I make skeletons?
 
-`wisk` accepts any path as a possible skeleton, just make a folder anywhere and `wisk` will use it. However, this makes it a little hard to share skeletons. So `wisk` also accepts a \*.zip archive. Like so;
+`wisk` accepts any directory as a possible skeleton, just make a folder anywhere and `wisk` will be able to use it. However, this makes it a little hard to share skeletons. So `wisk` also accepts a \*.zip archive. Like so;
 
     wisk ./skeleton.zip ./cool_project
 
@@ -61,18 +67,6 @@ Which uses the "skeleton" template (as it was defined when you used the `-a` fla
 After registration, you can list all registered project skeletons by using the `-l` flag, like so;
 
     wisk -l
-
-###How do I know what parameters a skeleton accepts?
-
-Running `wisk` with the "-i" flag will inspect the given skeleton, and print out a list of all parameters used by it. Like so;
-
-    wisk -i ./skeleton
-
-This flag works with any valid skeleton, including directories, archives, and registered skeletons. So all of the following work the same (assuming they all exist);
-
-    wisk -i ./skeleton
-    wisk -i ./skeleton.zip
-    wisk -i skeleton
 
 ###Can I run a script after wisking a new project?
 
