@@ -5,4 +5,4 @@ export GOOS=linux
 export GOARCH=amd64
 
 go get ./...
-go build ./.output/${{=project.name=}} .
+go build -o ./.output/${{=project.name=}} .
