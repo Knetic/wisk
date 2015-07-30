@@ -76,6 +76,10 @@ The script's working directory will be set to the generated project's directory.
 
 Note that this may have security implications. Inspect post-generation scripts created by others before using project skeletons.
 
+###Aren't there other projects that do this?
+
+Sort of. Maven and Gradle both had the notion of "archetypes", which is conceptually similar. There are projects like Mr. Bones for ruby, and even IDE-specific solutions such as Eclipse or Visual Studio's project templates. That's to say nothing of all the framework-specific project generators. But I've grown tired of learning a new template scheme and cli interface for every language or framework, I just wanted to have one set of templates that were all user-defined, easy to share, and all using a unified parameter interface.
+
 ###Branching
 
 I use green masters, and heavily develop with private feature branches. Full releases are pinned and unchangeable, representing the best available version with the best documentation and test coverage. Master branch, however, should always have all tests pass and implementations considered "working", even if it's just a first pass. Master should never panic.
