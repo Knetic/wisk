@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"strings"
+	"path/filepath"
 )
 
 /*
@@ -37,19 +38,16 @@ func FindRunSettings() (RunSettings, error) {
 	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")
 	flag.Parse()
 
-	ret.parameters, err = parseParameters(parameterGroup)
-	if err != nil {
-		return ret, err
-	}
-
 	ret.skeletonPath = flag.Arg(0)
 	ret.targetPath = flag.Arg(1)
 
+	// if we're not just showing the registry, and not skeleton path is specified...
 	if !ret.showRegistry && ret.skeletonPath == "" {
 		errorMsg := fmt.Sprintf("Skeleton project path not specified")
 		return ret, errors.New(errorMsg)
 	}
 
+	// if we're actually generating a project, and no target path is specified...
 	if !ret.showRegistry &&
 		!ret.inspectionRun &&
 		!ret.addRegistry &&
@@ -59,22 +57,29 @@ func FindRunSettings() (RunSettings, error) {
 		return ret, errors.New(errorMsg)
 	}
 
+	// make parameters, set default project.name
+	ret.parameters = make(map[string]string)
+	ret.parameters["project.name"] = filepath.Base(ret.targetPath)
+
+	err = parseParametersTo(parameterGroup, ret.parameters)
+	if err != nil {
+		return ret, err
+	}
+
 	return ret, nil
 }
 
 /*
   Given a sequence of k=v strings, this parses them out into a map.
 */
-func parseParameters(parameterGroup string) (map[string]string, error) {
+func parseParametersTo(parameterGroup string, destination map[string]string) (error) {
 
 	var groups, pair []string
-	var ret map[string]string
 
 	parameterGroup = strings.Trim(parameterGroup, " ")
-	ret = make(map[string]string, len(groups))
 
 	if len(parameterGroup) == 0 {
-		return ret, nil
+		return nil
 	}
 
 	groups = strings.Split(parameterGroup, ";")
@@ -90,11 +95,11 @@ func parseParameters(parameterGroup string) (map[string]string, error) {
 
 		if len(pair) != 2 {
 			errorMsg := fmt.Sprintf("Unable to parse parameters, expected exactly one '=' per semicolon-separated set")
-			return ret, errors.New(errorMsg)
+			return errors.New(errorMsg)
 		}
 
-		ret[pair[0]] = pair[1]
+		destination[pair[0]] = pair[1]
 	}
 
-	return ret, nil
+	return nil
 }
