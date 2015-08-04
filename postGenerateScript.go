@@ -54,5 +54,27 @@ func executePostGenerate(sourcePath string, generatedPath string) error {
   }
 
   fmt.Printf(string(output))
+
+  // remove postgenerate script from generated directory.
+  err = removePostGenerate(generatedPath)
+  if(err != nil) {
+    return err
+  }
+
   return nil
+}
+
+func removePostGenerate(generatedPath string) error {
+
+  var scriptPath string
+  var err error
+
+  scriptPath = fmt.Sprintf("%s%s_postGenerate.sh", generatedPath, string(os.PathSeparator))
+  scriptPath, err = filepath.Abs(scriptPath)
+  if(err != nil) {
+    return err
+  }
+
+  err = os.Remove(scriptPath)
+  return err
 }
