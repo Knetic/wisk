@@ -38,3 +38,7 @@ func (this StringSet) Contains(item string) bool {
 func (this StringSet) GetSlice() []string {
 	return this.values
 }
+
+func (this StringSet) Length() int {
+	return len(this.values)
+}

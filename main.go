@@ -112,6 +112,15 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 		exitWith("Unable to complete post-generation script: %s\n", err, 1)
 		return
 	}
+
+	// if everything succeeded, but we had missing parameters, make a note of it to the user.
+	if(project.missingParameters.Length() > 0) {
+		fmt.Printf("Project generated, but some parameters were not specified, and have been left blank:\n")
+
+		for _, value := range project.missingParameters.GetSlice() {
+			fmt.Println(value)
+		}
+	}
 }
 
 func exitWith(message string, err error, code int) {
