@@ -75,6 +75,7 @@ func FindRunSettings() (RunSettings, error) {
 func parseParametersTo(parameterGroup string, destination map[string]string) (error) {
 
 	var groups, pair []string
+	var key, value string
 
 	parameterGroup = strings.Trim(parameterGroup, " ")
 
@@ -98,7 +99,10 @@ func parseParametersTo(parameterGroup string, destination map[string]string) (er
 			return errors.New(errorMsg)
 		}
 
-		destination[pair[0]] = pair[1]
+		key = strings.Trim(pair[0], " ")
+		value = strings.Trim(pair[1], " ")
+
+		destination[key] = value
 	}
 
 	return nil
