@@ -38,13 +38,29 @@ You can give `wisk` multiple parameters to replace by semicolon-separating them;
 
     wisk -p "project.name=fooject;project.executable=foo" ./skeleton ./cool_project
 
-Placeholders can be literally anywhere in a plaintext file. `wisk` doesn't parse the file, it just looks for the placeholder tags. You can use them for classnames, module paths, import statements, variable names, README contents, or 
+Placeholders can be literally anywhere in a plaintext file. `wisk` doesn't parse the file, it just looks for the placeholder tags. You can use them for classnames, module paths, import statements, variable names, README contents, or
 
 If a skeleton contains a parameter that is not specified, the generated project will have all instances of that placeholder replaced with a blank string. This may cause syntax errors, so it's best to always specify every parameter that you need. You can inspect the parameters a skeleton supports by using the `-i` flag, like so;
 
     wisk -i ./skeleton
-    
+
 This flag works with any valid skeleton, including directories, archives, and registered skeletons.
+
+###How do I make package paths?
+
+Parameters can be specified as a list by seprating values with a comma, like so.
+
+    wisk -p "project.package=com,example,sample"
+
+By default, if a parameter is referenced and the parameter is a list, only the first element in the list
+will be used. So using "${{=project.package=}}" with the above parameters will only result in "com".
+However, placeholders can specify a separator used to join the list elements together, like so;
+
+    ${{=project.package[.]=}}
+
+In this case, the above will be replaced with "com.example.sample". This is useful for creating nested folder structures, or package names. See the Java examples in the "samples" folder for an implementation of this, using a single "project.package" parameter to create nested folder hierarchies and package declarations.
+
+Note that if no separator is specified, the default OS path separator is used instead.
 
 ###How do I make skeletons?
 
