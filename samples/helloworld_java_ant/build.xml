@@ -1,0 +1,35 @@
+<project name="${{=project.name=}}" default="complete" basedir=".">
+    <description>
+        Builds ${{=project.name=}}
+    </description>
+
+  <property name="local" location="."/>
+  <property name="src" location="src"/>
+
+  <property name="output" location="output"/>
+  <property name="release" location="release"/>
+  <property name="jarOutput" location="${release}/${{=project.name=}}.jar"/>
+
+  <target name="init">
+  	<delete dir="${release}"/>
+
+  	<mkdir dir="${output}"/>
+  	<mkdir dir="${release}"/>
+
+  	<copy todir="${release}/lib">
+  		<fileset dir="lib"/>
+  	</copy>
+  </target>
+
+  <target name="compile" depends="init" description="Builds the project from source" >
+    <javac srcdir="${src}" destdir="${output}" classpath="${lib}" includeantruntime="false" debug="true"/>
+  </target>
+
+  <target name="apiDoc" depends="compile">
+    <javadoc destdir="docs/api" sourcepath="src"/>
+  </target>
+
+  <target name="complete" depends="apiDoc, compile" description="Complete production build including javadocs">
+  </target>
+
+</project>
