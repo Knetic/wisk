@@ -14,8 +14,8 @@ const (
 	PLACEHOLDER_OPEN  = "${{="
 	PLACEHOLDER_CLOSE = "=}}"
 
-	PARAMETER_GROUP_OPEN = "["
-	PARAMETER_GROUP_CLOSE = "]"
+	PARAMETER_JOIN_OPEN = "["
+	PARAMETER_JOIN_CLOSE = "]"
 	archiveMarker			= ".zip"
 )
 
@@ -207,7 +207,7 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 
 	var resultBuffer bytes.Buffer
 	var characters chan rune
-	var sequence string
+	var sequence, separator, parameterName string
 	var parameterValues []string
 	var exists bool
 
@@ -235,17 +235,51 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 		// write parameter. If the parameter is unspecified, add it to the list of missing parameters.
 
 		// check if the parameter has a separator
+		exists, parameterName, separator = determineParameterSeparator(sequence)
+		if(exists) {
 
+			parameterValues, exists = parameters[parameterName]
 
-		parameterValues, exists = parameters[sequence]
-		if(!exists) {
-			this.missingParameters.Add(sequence)
+			if(!exists) {
+				this.missingParameters.Add(parameterName)
+			} else {
+
+				sequence = strings.Join(parameterValues, separator)
+				resultBuffer.WriteString(sequence)
+			}
 		} else {
-			resultBuffer.WriteString(parameterValues[0])
+
+			// this must be a normal parameter.
+			parameterValues, exists = parameters[sequence]
+			if(!exists) {
+				this.missingParameters.Add(sequence)
+			} else {
+				resultBuffer.WriteString(parameterValues[0])
+			}
 		}
 	}
 
 	return resultBuffer.String()
+}
+
+func determineParameterSeparator(parameter string) (exists bool, name string, separator string) {
+
+	var start, end int
+
+	start = strings.LastIndex(parameter, PARAMETER_JOIN_OPEN)
+	end = strings.LastIndex(parameter, PARAMETER_JOIN_CLOSE)
+
+	if(start > 0 && end > 0) {
+
+		separator = parameter[start+1:end]
+		if(len(separator) <= 0) {
+			separator = string(os.PathSeparator)
+		}
+
+		return true, parameter[0:start], separator
+	}
+
+	return false, "", ""
 }
 
 /*
