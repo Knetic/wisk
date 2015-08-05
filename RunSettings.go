@@ -13,7 +13,7 @@ import (
 */
 type RunSettings struct {
 
-	parameters map[string]string
+	parameters map[string][]string
 
 	skeletonPath string
 	targetPath   string
@@ -58,8 +58,8 @@ func FindRunSettings() (RunSettings, error) {
 	}
 
 	// make parameters, set default project.name
-	ret.parameters = make(map[string]string)
-	ret.parameters["project.name"] = filepath.Base(ret.targetPath)
+	ret.parameters = make(map[string][]string)
+	ret.parameters["project.name"] = []string{filepath.Base(ret.targetPath)}
 
 	err = parseParametersTo(parameterGroup, ret.parameters)
 	if err != nil {
@@ -72,9 +72,9 @@ func FindRunSettings() (RunSettings, error) {
 /*
   Given a sequence of k=v strings, this parses them out into a map.
 */
-func parseParametersTo(parameterGroup string, destination map[string]string) (error) {
+func parseParametersTo(parameterGroup string, destination map[string][]string) (error) {
 
-	var groups, pair []string
+	var groups, pair, values []string
 	var key, value string
 
 	parameterGroup = strings.Trim(parameterGroup, " ")
@@ -101,8 +101,14 @@ func parseParametersTo(parameterGroup string, destination map[string]string) (er
 
 		key = strings.Trim(pair[0], " ")
 		value = strings.Trim(pair[1], " ")
+		values = strings.Split(value, ",")
 
-		destination[key] = value
+		if(len(values) <= 0) {
+			errorMsg := fmt.Sprintf("Unable to parse parameters, parameter '%s', value was empty\n", key)
+			return errors.New(errorMsg)
+		}
+
+		destination[key] = values
 	}
 
 	return nil

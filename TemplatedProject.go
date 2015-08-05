@@ -13,6 +13,9 @@ import (
 const (
 	PLACEHOLDER_OPEN  = "${{="
 	PLACEHOLDER_CLOSE = "=}}"
+
+	PARAMETER_GROUP_OPEN = "["
+	PARAMETER_GROUP_CLOSE = "]"
 	archiveMarker			= ".zip"
 )
 
@@ -80,7 +83,7 @@ func createTemplatedProjectFromFile(path string) (*TemplatedProject, error) {
   Creates a copy of this project's template at the given [targetPath]
   using the given [parameters].
 */
-func (this *TemplatedProject) GenerateAt(targetPath string, parameters map[string]string) error {
+func (this *TemplatedProject) GenerateAt(targetPath string, parameters map[string][]string) error {
 
 	var file TemplatedFile
 	var inputPath, outputPath string
@@ -162,7 +165,7 @@ func (this TemplatedProject) FindParameters() ([]string, error) {
   then writes the results to the given [outPath] (with the given [mode]).
   Any directories that do not exist in the [outPath] tree will be created.
 */
-func (this *TemplatedProject) replaceFileContents(inPath, outPath string, mode os.FileMode, parameters map[string]string) error {
+func (this *TemplatedProject) replaceFileContents(inPath, outPath string, mode os.FileMode, parameters map[string][]string) error {
 
 	var contentBytes []byte
 	var contents, path, base string
@@ -200,12 +203,12 @@ func (this *TemplatedProject) replaceFileContents(inPath, outPath string, mode o
   Replaces all placeholders in the given [input] with their equivalent values in [parameters],
   returning the resultant string.
 */
-func (this *TemplatedProject) replaceStringParameters(input string, parameters map[string]string) string {
+func (this *TemplatedProject) replaceStringParameters(input string, parameters map[string][]string) string {
 
 	var resultBuffer bytes.Buffer
 	var characters chan rune
 	var sequence string
-	var parameterValue string
+	var parameterValues []string
 	var exists bool
 
 	characters = make(chan rune)
@@ -230,11 +233,15 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 		}
 
 		// write parameter. If the parameter is unspecified, add it to the list of missing parameters.
-		parameterValue, exists = parameters[sequence]
+
+		// check if the parameter has a separator
+
+
+		parameterValues, exists = parameters[sequence]
 		if(!exists) {
 			this.missingParameters.Add(sequence)
 		} else {
-			resultBuffer.WriteString(parameterValue)
+			resultBuffer.WriteString(parameterValues[0])
 		}
 	}
 
