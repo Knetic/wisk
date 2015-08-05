@@ -1,6 +1,9 @@
 require '${{=gem.name=}}/version'
 
-module ${{=gem.module=}}
-
-  VERSION = '1.0.0'
+${{=:gem.module=}}
+module ${{=_value=}}
+  ${{=_recurse=}}
 end
+${{=;gem.module=}}
+
+${{=gem.module[::]=}}.VERSION = '1.0.0'

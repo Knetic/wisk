@@ -5,7 +5,7 @@ require '${{=gem.name=}}/version'
 
 Gem::Specification.new do |spec|
   spec.name         = '${{=gem.name=}}'
-  spec.version      = ${{=gem.module=}}::VERSION
+  spec.version      = ${{=gem.module[::]=}}::VERSION
   spec.authors      = ['${{=gem.author=}}']
   spec.email        = ['${{=gem.author_email=}}']
   spec.summary      = %q{A sample gem}

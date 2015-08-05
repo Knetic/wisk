@@ -1,0 +1,1 @@
+require '${{=gem.name=}}/version'

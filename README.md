@@ -46,21 +46,7 @@ If a skeleton contains a parameter that is not specified, the generated project 
 
 This flag works with any valid skeleton, including directories, archives, and registered skeletons.
 
-###How do I make package paths?
-
-Parameters can be specified as a list by seprating values with a comma, like so.
-
-    wisk -p "project.package=com,example,sample"
-
-By default, if a parameter is referenced and the parameter is a list, only the first element in the list
-will be used. So using "${{=project.package=}}" with the above parameters will only result in "com".
-However, placeholders can specify a separator used to join the list elements together, like so;
-
-    ${{=project.package[.]=}}
-
-In this case, the above will be replaced with "com.example.sample". This is useful for creating nested folder structures, or package names. See the Java examples in the "samples" folder for an implementation of this, using a single "project.package" parameter to create nested folder hierarchies and package declarations.
-
-Note that if no separator is specified, the default OS path separator is used instead.
+There are more features to `wisk`, if you're still curious about them you ought to read "ADVANCED.md" in this repository, or check out the "samples" directory - it has examples in many languages, some of which use more advanced features than others. In particular, the "helloworld_ruby" sample shows off every feature in `wisk`.
 
 ###How do I make skeletons?
 

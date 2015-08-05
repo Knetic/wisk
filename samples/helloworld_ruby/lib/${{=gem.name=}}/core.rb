@@ -1,6 +1,6 @@
 require '${{=gem.name=}}'
 
-module ${{=gem.module=}}
+module ${{=gem.module[::]=}}
 
 	class ${{=gem.class=}}
 
