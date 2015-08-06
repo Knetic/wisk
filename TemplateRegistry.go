@@ -8,6 +8,7 @@ import (
   "strings"
   "path/filepath"
   "github.com/mitchellh/go-homedir"
+  "github.com/jhoonb/archivex"
 )
 
 /*
@@ -112,8 +113,14 @@ func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
   var targetPath, name string
   var err error
 
+  // if the given path is a directory (not a zip file),
+  // archive it and prepare for registration.
   if(!strings.HasSuffix(path, archiveMarker)) {
-    return "", errors.New("Cannot register a non-zip template\n")
+
+    path, err = archivePath(path)
+    if(err != nil) {
+      return "", err
+    }
   }
 
   name = filepath.Base(path)
@@ -121,6 +128,28 @@ func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
 
   _, err = CopyFile(path, targetPath)
   return name, err
+}
+
+func archivePath(path string) (string, error) {
+
+  var zip archivex.ZipFile
+  var name string
+  var tempPath string
+  var err error
+
+  tempPath, err = ioutil.TempDir("", "")
+  if(err != nil) {
+    return "", err
+  }
+
+  name = filepath.Base(path)
+  tempPath = fmt.Sprintf("%s%s%s.zip", tempPath, string(os.PathSeparator), name)
+
+  zip.Create(tempPath)
+  zip.AddAll(path, false)
+  zip.Close()
+
+  return tempPath, nil
 }
 
 /*
