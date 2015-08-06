@@ -17,7 +17,8 @@ const (
 	PARAMETER_JOIN_OPEN = "["
 	PARAMETER_JOIN_CLOSE = "]"
 
-	PLACEHOLDER_CONTENT_CLOSE = "${{=;"
+	PLACEHOLDER_ITERATIVE_VALUE = "${{value}}"
+	PLACEHOLDER_ITERATIVE_RECURSE = "${{recurse}}"
 
 	archiveMarker			= ".zip"
 )
@@ -254,10 +255,10 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 		}
 
 		// is this a content placeholder?
-		if(sequence[0:] == ":") {
+		if(sequence[0:1] == ":") {
 
 			parameterName = sequence[1:len(sequence)]
-			sequence, exists = readUntil(fmt.Sprintf("${{=;%s=}}", parameterName))
+			sequence, exists = readUntil(fmt.Sprintf("${{=;%s=}}", parameterName), characters)
 
 			// no closing content identifier?
 			if(!exists) {
@@ -271,7 +272,7 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 				continue
 			}
 
-			sequence = fillContentPlaceholder(parameterValues, sequence, parameters)
+			sequence = this.fillContentPlaceholder(parameterValues, sequence, parameters)
 			resultBuffer.WriteString(sequence)
 			continue
 		}
@@ -295,13 +296,38 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 func (this *TemplatedProject) fillContentPlaceholder(parameterValues []string, contents string, parameters map[string][]string) string {
 
 	var ret bytes.Buffer
+	var contentTemplate, replaced, current string
+	var recursive bool
 
 	// explode any inner content placeholders or regular placeholders.
-	contents = this.replaceStringParameters(contents, parameters)
+	contentTemplate = this.replaceStringParameters(contents, parameters)
+	contentTemplate	= strings.Trim(contentTemplate, " \n")
+
+	current = PLACEHOLDER_ITERATIVE_RECURSE
+	recursive = strings.Index(contentTemplate, PLACEHOLDER_ITERATIVE_RECURSE) > 0
 
 	// iterate over every item in the list of parameter values, replacing "${{value}}" with the current item.
+	for _, value := range parameterValues {
 
-	// if recursion happens, this method will be recursed.
+		replaced = strings.Replace(contentTemplate, PLACEHOLDER_ITERATIVE_VALUE, value, 1)
+
+		// if this is a recursive template, replace the recursion indicator
+		// with the replaced value.
+		if(recursive) {
+
+			current = strings.Replace(current, PLACEHOLDER_ITERATIVE_RECURSE, replaced, 1)
+		} else {
+			// otherwise, just append.
+			ret.WriteString(replaced)
+		}
+	}
+
+	if(recursive) {
+
+		current = strings.Replace(current, PLACEHOLDER_ITERATIVE_RECURSE, "", 1)
+		return current
+	}
+	return ret.String()
 }
 
 func determineParameterSeparator(parameter string) (exists bool, name string, separator string) {
