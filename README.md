@@ -38,7 +38,7 @@ You can give `wisk` multiple parameters to replace by semicolon-separating them;
 
     wisk -p "project.name=fooject;project.executable=foo" ./skeleton ./cool_project
 
-Placeholders can be literally anywhere in a plaintext file. `wisk` doesn't parse the file, it just looks for the placeholder tags. You can use them for classnames, module paths, import statements, variable names, README contents, or
+Placeholders can be literally anywhere in a plaintext file. `wisk` doesn't parse the file, it just looks for the placeholder tags. You can use them for classnames, module paths, import statements, variable names, README contents, or anywhere else.
 
 If a skeleton contains a parameter that is not specified, the generated project will have all instances of that placeholder replaced with a blank string. This may cause syntax errors, so it's best to always specify every parameter that you need. You can inspect the parameters a skeleton supports by using the `-i` flag, like so;
 
