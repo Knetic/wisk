@@ -1,8 +1,8 @@
 require '${{=gem.name=}}/version'
 
 ${{=:gem.module=}}
-module ${{=_value=}}
-  ${{=_recurse=}}
+module ${{value}}
+  ${{recurse}}
 end
 ${{=;gem.module=}}
 

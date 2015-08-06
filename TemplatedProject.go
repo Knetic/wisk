@@ -16,6 +16,9 @@ const (
 
 	PARAMETER_JOIN_OPEN = "["
 	PARAMETER_JOIN_CLOSE = "]"
+
+	PLACEHOLDER_CONTENT_CLOSE = "${{=;"
+
 	archiveMarker			= ".zip"
 )
 
@@ -247,19 +250,58 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 				sequence = strings.Join(parameterValues, separator)
 				resultBuffer.WriteString(sequence)
 			}
-		} else {
+			continue
+		}
 
-			// this must be a normal parameter.
-			parameterValues, exists = parameters[sequence]
+		// is this a content placeholder?
+		if(sequence[0:] == ":") {
+
+			parameterName = sequence[1:len(sequence)]
+			sequence, exists = readUntil(fmt.Sprintf("${{=;%s=}}", parameterName))
+
+			// no closing content identifier?
 			if(!exists) {
-				this.missingParameters.Add(sequence)
-			} else {
-				resultBuffer.WriteString(parameterValues[0])
+				resultBuffer.WriteString(sequence)
+				continue
 			}
+
+			parameterValues, exists = parameters[parameterName]
+			if(!exists) {
+				this.missingParameters.Add(parameterName)
+				continue
+			}
+
+			sequence = fillContentPlaceholder(parameterValues, sequence, parameters)
+			resultBuffer.WriteString(sequence)
+			continue
+		}
+
+		// this must be a normal parameter.
+		parameterValues, exists = parameters[sequence]
+		if(!exists) {
+			this.missingParameters.Add(sequence)
+		} else {
+			resultBuffer.WriteString(parameterValues[0])
 		}
 	}
 
 	return resultBuffer.String()
+}
+
+/*
+	Given the contents of a content placeholder and a specific parameter name / parameters, this
+	returns a string which represents the exploded/replaced content.
+*/
+func (this *TemplatedProject) fillContentPlaceholder(parameterValues []string, contents string, parameters map[string][]string) string {
+
+	var ret bytes.Buffer
+
+	// explode any inner content placeholders or regular placeholders.
+	contents = this.replaceStringParameters(contents, parameters)
+
+	// iterate over every item in the list of parameter values, replacing "${{value}}" with the current item.
+
+	// if recursion happens, this method will be recursed.
 }
 
 func determineParameterSeparator(parameter string) (exists bool, name string, separator string) {

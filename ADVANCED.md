@@ -1,5 +1,13 @@
 # Advanced usage
 
+###Are there parameter naming restrictions?
+
+Yes. Parameters can be any combination of unicode code points that forms a series of runes. But, parameters must not contain square brackets (`[]`), and must not include either a semicolon or an equals sign (`;` or `=`), and cannot begin with a colon (`:`).
+
+Parameters _can_ begin with numbers, unlike other frameworks/parsers which prohibit this.
+
+As features emerge, further restrictions may apply. Any new feature that adds naming restrictions will try to stick to the ascii-range symbols. In general, try to keep your parameters alphanumeric, and you'll be fine.
+
 ###How do I make package paths?
 
 Parameters can be specified as a list by seprating values with a comma, like so.
@@ -38,8 +46,8 @@ The following would be generated:
 However, this "content placeholder" construct can be used recursively with the `_recurse_` reserved placeholder. This is primarily useful for things like Ruby module declarations. Given the below example;
 
 	${{=:project.module=}}
-	module ${{=_value=}}
-		${{=_recurse=}}
+	module ${{value}}
+		${{recurse}}
 	end
 	${{=;project.module=}}
 
@@ -55,21 +63,6 @@ The result is:
 			end
 		end
 	end
-
-Note that as of this time content placeholders cannot be nested. The following is _invalid_:
-
-	${{=:project.module=}}
-	some
-	content
-	${{=_value=}}
-		${{=:project.innerModule=}}
-		more
-		content
-		${{=_value=}}
-		${{=;project.innerModule=}}
-	${{=;project.module=}}
-
-There will be an issue opened to support this, but it won't be on the roadmap unless some use cases make themselves apparent. At present, it doesn't seem too useful for any projects I can think of. But if you want this functionality, +1 the issue (or open a new one).
 
 ###Will this overwrite existing files?
 
