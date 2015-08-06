@@ -6,9 +6,9 @@
 
 ###Why is this useful?
 
-I tend to make _lots_ of small projects. Utilities, gems, modules, websites, services - everything. And every language and framework requires a different project file structure, meaning that in order to even build "hello world" you need to bear a lot of project-specific file structures and contents in mind. `wisk` allows you to build a skeleton _once_, then reuse it to speed up the creation of new projects.
+You (or your company) probably makes projects with very common dependencies, patterns, names, metadata, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting, and probably involves a good amount of copy/paste, find/replace, and crossed fingers. With `wisk`, you can make a single skeleton by writing all of the dependencies, structure and conventions once - then re-using that to generate multiple projects.
 
-Your company probably makes projects with very common dependencies, patterns, names, metadata, and boilerplate code for every project. Updating this boilerplate content, or even making a new project, can be daunting, and probably involves a good amount of copy/paste and crossed fingers. With `wisk`, you can make a single skeleton by writing all of the dependencies, structure and conventions once - then re-using that to generate multiple projects.
+This tool lets you parameterize file contents, _file names_ and directory names. It seeks to completely eliminate copy/pasting and find/replacing when creating new projects. You should be able to run one command and have a fully-functional (and correctly-named) project ready to go immediately.
 
 ###Will this work for my favorite language?
 
