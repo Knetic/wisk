@@ -22,7 +22,7 @@ func main() {
 	registry = NewTemplateRegistry()
 
 	// is the user showing the registry?
-	if(settings.showRegistry) {
+	if settings.showRegistry {
 		showRegistry(registry)
 		return
 	}
@@ -49,7 +49,7 @@ func addRegistry(settings RunSettings, registry *TemplateRegistry) {
 	var err error
 
 	name, err = registry.RegisterTemplate(settings.skeletonPath)
-	if(err != nil) {
+	if err != nil {
 
 		// TODO: I'm deeply uncomfortable with using "exitWith" outside of the actual
 		// main method. This is too easy to let "exiting" become a separate code path.
@@ -67,10 +67,10 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 	var err error
 
 	// is this a registry skeleton?
-	if(registry.IsPathRegistry(settings.skeletonPath) && registry.Contains(settings.skeletonPath)) {
+	if registry.IsPathRegistry(settings.skeletonPath) && registry.Contains(settings.skeletonPath) {
 
 		settings.skeletonPath, err = registry.GetTemplatePath(settings.skeletonPath)
-		if(err != nil) {
+		if err != nil {
 			exitWith("Unable to expand registered template: %s\n", err, 1)
 			return
 		}
@@ -108,13 +108,13 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 
 	// if there's a post-generate script (and it's executable), call it.
 	err = executePostGenerate(project.rootDirectory, settings.targetPath)
-	if(err != nil) {
+	if err != nil {
 		exitWith("Unable to complete post-generation script: %s\n", err, 1)
 		return
 	}
 
 	// if everything succeeded, but we had missing parameters, make a note of it to the user.
-	if(project.missingParameters.Length() > 0) {
+	if project.missingParameters.Length() > 0 {
 		fmt.Printf("Project generated, but some parameters were not specified, and have been left blank:\n")
 
 		for _, value := range project.missingParameters.GetSlice() {

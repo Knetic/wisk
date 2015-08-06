@@ -1,23 +1,22 @@
 package main
 
 import (
-  "io/ioutil"
-  "os"
-  "fmt"
-  "errors"
-  "strings"
-  "path/filepath"
-  "github.com/mitchellh/go-homedir"
-  "github.com/jhoonb/archivex"
+	"errors"
+	"fmt"
+	"github.com/jhoonb/archivex"
+	"github.com/mitchellh/go-homedir"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 /*
   Manages templates that live in a persistent template directory on the local disk.
 */
 type TemplateRegistry struct {
-
-  templatePaths StringSet
-  path string
+	templatePaths StringSet
+	path          string
 }
 
 /*
@@ -28,44 +27,44 @@ type TemplateRegistry struct {
 */
 func NewTemplateRegistry() *TemplateRegistry {
 
-  var ret *TemplateRegistry
-  var files []os.FileInfo
-  var name string
-  var err error
+	var ret *TemplateRegistry
+	var files []os.FileInfo
+	var name string
+	var err error
 
-  ret = new(TemplateRegistry)
+	ret = new(TemplateRegistry)
 
-  ret.path, err = getRegistryPath()
-  if(err != nil) {
-    return ret
-  }
+	ret.path, err = getRegistryPath()
+	if err != nil {
+		return ret
+	}
 
-  err = os.MkdirAll(ret.path, 0700)
-  if(err != nil) {
-    return ret
-  }
+	err = os.MkdirAll(ret.path, 0700)
+	if err != nil {
+		return ret
+	}
 
-  files, err = ioutil.ReadDir(ret.path)
-  if(err != nil) {
-    return ret
-  }
+	files, err = ioutil.ReadDir(ret.path)
+	if err != nil {
+		return ret
+	}
 
-  for _, file := range files {
+	for _, file := range files {
 
-    name = file.Name()
+		name = file.Name()
 
-    // strip extension
-    extensionIndex := len(filepath.Ext(name))
-    if(extensionIndex > 0) {
+		// strip extension
+		extensionIndex := len(filepath.Ext(name))
+		if extensionIndex > 0 {
 
-      nameLen := len(name)
-      name = name[0:nameLen-extensionIndex]
-    }
+			nameLen := len(name)
+			name = name[0 : nameLen-extensionIndex]
+		}
 
-    ret.templatePaths.Add(name)
-  }
+		ret.templatePaths.Add(name)
+	}
 
-  return ret
+	return ret
 }
 
 /*
@@ -73,7 +72,7 @@ func NewTemplateRegistry() *TemplateRegistry {
   false otherwise.
 */
 func (this TemplateRegistry) Contains(name string) bool {
-  return this.templatePaths.Contains(name)
+	return this.templatePaths.Contains(name)
 }
 
 /*
@@ -81,7 +80,7 @@ func (this TemplateRegistry) Contains(name string) bool {
   as a registry template.
 */
 func (this TemplateRegistry) IsPathRegistry(path string) bool {
-  return !strings.Contains(path, string(os.PathSeparator)) && !strings.Contains(path, ".")
+	return !strings.Contains(path, string(os.PathSeparator)) && !strings.Contains(path, ".")
 }
 
 /*
@@ -92,15 +91,15 @@ func (this TemplateRegistry) IsPathRegistry(path string) bool {
 */
 func (this TemplateRegistry) GetTemplatePath(name string) (string, error) {
 
-  var path string
+	var path string
 
-  if(!this.Contains(name)) {
-    errorMsg := fmt.Sprintf("Cannot find any template by the name '%s'\n", name)
-    return "", errors.New(errorMsg)
-  }
+	if !this.Contains(name) {
+		errorMsg := fmt.Sprintf("Cannot find any template by the name '%s'\n", name)
+		return "", errors.New(errorMsg)
+	}
 
-  path = (this.path + name + ".zip")
-  return filepath.Abs(path)
+	path = (this.path + name + ".zip")
+	return filepath.Abs(path)
 }
 
 /*
@@ -110,71 +109,71 @@ func (this TemplateRegistry) GetTemplatePath(name string) (string, error) {
 */
 func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
 
-  var targetPath, name string
-  var err error
+	var targetPath, name string
+	var err error
 
-  // if the given path is a directory (not a zip file),
-  // archive it and prepare for registration.
-  if(!strings.HasSuffix(path, archiveMarker)) {
+	// if the given path is a directory (not a zip file),
+	// archive it and prepare for registration.
+	if !strings.HasSuffix(path, archiveMarker) {
 
-    path, err = archivePath(path)
-    if(err != nil) {
-      return "", err
-    }
-  }
+		path, err = archivePath(path)
+		if err != nil {
+			return "", err
+		}
+	}
 
-  name = filepath.Base(path)
-  targetPath = fmt.Sprintf("%s%s%s", this.path, string(os.PathSeparator), name)
+	name = filepath.Base(path)
+	targetPath = fmt.Sprintf("%s%s%s", this.path, string(os.PathSeparator), name)
 
-  _, err = CopyFile(path, targetPath)
-  return name, err
+	_, err = CopyFile(path, targetPath)
+	return name, err
 }
 
 func archivePath(path string) (string, error) {
 
-  var zip archivex.ZipFile
-  var name string
-  var tempPath string
-  var err error
+	var zip archivex.ZipFile
+	var name string
+	var tempPath string
+	var err error
 
-  tempPath, err = ioutil.TempDir("", "")
-  if(err != nil) {
-    return "", err
-  }
+	tempPath, err = ioutil.TempDir("", "")
+	if err != nil {
+		return "", err
+	}
 
-  name = filepath.Base(path)
-  tempPath = fmt.Sprintf("%s%s%s.zip", tempPath, string(os.PathSeparator), name)
+	name = filepath.Base(path)
+	tempPath = fmt.Sprintf("%s%s%s.zip", tempPath, string(os.PathSeparator), name)
 
-  zip.Create(tempPath)
-  zip.AddAll(path, false)
-  zip.Close()
+	zip.Create(tempPath)
+	zip.AddAll(path, false)
+	zip.Close()
 
-  return tempPath, nil
+	return tempPath, nil
 }
 
 /*
   Returns a slice representing every template in this registry.
 */
 func (this TemplateRegistry) GetTemplateList() []string {
-  return this.templatePaths.GetSlice()
+	return this.templatePaths.GetSlice()
 }
 
 func getRegistryPath() (string, error) {
 
-  var ret string
-  var err error
+	var ret string
+	var err error
 
-  ret, err = homedir.Dir()
-  if(err != nil) {
-    errorMsg := fmt.Sprintf("Unable to determine user home directory: %s\n", err.Error())
-    return "", errors.New(errorMsg)
-  }
+	ret, err = homedir.Dir()
+	if err != nil {
+		errorMsg := fmt.Sprintf("Unable to determine user home directory: %s\n", err.Error())
+		return "", errors.New(errorMsg)
+	}
 
-  ret, err = homedir.Expand(ret)
-  if(err != nil) {
-    errorMsg := fmt.Sprintf("Unable to expand home directory: %s\n", err.Error())
-    return "", errors.New(errorMsg)
-  }
+	ret, err = homedir.Expand(ret)
+	if err != nil {
+		errorMsg := fmt.Sprintf("Unable to expand home directory: %s\n", err.Error())
+		return "", errors.New(errorMsg)
+	}
 
-  return fmt.Sprintf("%s%s.wisk/", ret, string(os.PathSeparator)), nil
+	return fmt.Sprintf("%s%s.wisk/", ret, string(os.PathSeparator)), nil
 }

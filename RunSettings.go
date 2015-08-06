@@ -4,23 +4,22 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"strings"
 	"path/filepath"
+	"strings"
 )
 
 /*
   Represents arguments given by the user to this program.
 */
 type RunSettings struct {
-
 	parameters map[string][]string
 
 	skeletonPath string
 	targetPath   string
 
 	inspectionRun bool
-	addRegistry bool
-	showRegistry bool
+	addRegistry   bool
+	showRegistry  bool
 }
 
 /*
@@ -72,7 +71,7 @@ func FindRunSettings() (RunSettings, error) {
 /*
   Given a sequence of k=v strings, this parses them out into a map.
 */
-func parseParametersTo(parameterGroup string, destination map[string][]string) (error) {
+func parseParametersTo(parameterGroup string, destination map[string][]string) error {
 
 	var groups, pair, values []string
 	var key, value string
@@ -103,7 +102,7 @@ func parseParametersTo(parameterGroup string, destination map[string][]string) (
 		value = strings.Trim(pair[1], " ")
 		values = strings.Split(value, ",")
 
-		if(len(values) <= 0) {
+		if len(values) <= 0 {
 			errorMsg := fmt.Sprintf("Unable to parse parameters, parameter '%s', value was empty\n", key)
 			return errors.New(errorMsg)
 		}

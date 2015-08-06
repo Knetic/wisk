@@ -1,10 +1,10 @@
 package main
 
 import (
-  "path/filepath"
-  "os"
-  "fmt"
-  "os/exec"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
 )
 
 /*
@@ -14,67 +14,67 @@ import (
 func executePostGenerate(sourcePath string, generatedPath string) error {
 
 	var command *exec.Cmd
-  var output []byte
+	var output []byte
 	var scriptPath string
 	var workingDirectory string
 	var err error
 
 	scriptPath = fmt.Sprintf("%s%s_postGenerate.sh", sourcePath, string(os.PathSeparator))
 	scriptPath, err = filepath.Abs(scriptPath)
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 
-  generatedPath, err = filepath.Abs(generatedPath)
-  if(err != nil) {
-    return err
-  }
+	generatedPath, err = filepath.Abs(generatedPath)
+	if err != nil {
+		return err
+	}
 
-  // file doesn't exist, exit quietly.
-  if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
-    return nil
-  }
+	// file doesn't exist, exit quietly.
+	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
+		return nil
+	}
 
 	workingDirectory, err = os.Getwd()
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 
 	err = os.Chdir(generatedPath)
-	if(err != nil) {
+	if err != nil {
 		return err
 	}
 	defer os.Chdir(workingDirectory)
 
-  command = exec.Command(scriptPath, "")
+	command = exec.Command(scriptPath, "")
 
-  output, err = command.CombinedOutput()
-  if(err != nil) {
-    return err
-  }
+	output, err = command.CombinedOutput()
+	if err != nil {
+		return err
+	}
 
-  fmt.Printf(string(output))
+	fmt.Printf(string(output))
 
-  // remove postgenerate script from generated directory.
-  err = removePostGenerate(generatedPath)
-  if(err != nil) {
-    return err
-  }
+	// remove postgenerate script from generated directory.
+	err = removePostGenerate(generatedPath)
+	if err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 func removePostGenerate(generatedPath string) error {
 
-  var scriptPath string
-  var err error
+	var scriptPath string
+	var err error
 
-  scriptPath = fmt.Sprintf("%s%s_postGenerate.sh", generatedPath, string(os.PathSeparator))
-  scriptPath, err = filepath.Abs(scriptPath)
-  if(err != nil) {
-    return err
-  }
+	scriptPath = fmt.Sprintf("%s%s_postGenerate.sh", generatedPath, string(os.PathSeparator))
+	scriptPath, err = filepath.Abs(scriptPath)
+	if err != nil {
+		return err
+	}
 
-  err = os.Remove(scriptPath)
-  return err
+	err = os.Remove(scriptPath)
+	return err
 }
