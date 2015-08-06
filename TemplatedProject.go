@@ -158,6 +158,17 @@ func (this TemplatedProject) FindParameters() ([]string, error) {
 				break
 			}
 
+			// content placeholder?
+			if(sequence[0:1] == ":" || sequence[0:1] == ";") {
+				sequence = sequence[1:len(sequence)]
+			}
+
+			// joined list?
+			index := strings.LastIndex(sequence, PARAMETER_JOIN_OPEN)
+			if(index > 0) {
+				sequence = sequence[0:index]
+			}
+
 			parameters.Add(sequence)
 		}
 	}
