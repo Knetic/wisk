@@ -2,7 +2,7 @@
 
 ###Are there parameter naming restrictions?
 
-Yes. Parameters can be any combination of unicode code points that forms a series of runes. But, parameters must not contain square brackets (`[]`), and must not include either a semicolon or an equals sign (`;` or `=`), and cannot begin with a colon (`:`).
+Yes. Parameters can be any combination of unicode code points that forms a series of runes. But, parameters must not contain square brackets (`[]`), and must not include either a semicolon, comma, or an equals sign (`;`, `,` or `=`), and cannot begin with a colon (`:`).
 
 Parameters _can_ begin with numbers, unlike other frameworks/parsers which prohibit this.
 
@@ -47,7 +47,7 @@ However, this "content placeholder" construct can be used recursively with the `
 
 	${{=:project.module=}}
 	module ${{value}}
-		${{recurse}}
+	${{recurse}}
 	end
 	${{=;project.module=}}
 
