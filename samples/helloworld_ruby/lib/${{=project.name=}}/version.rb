@@ -1,8 +1,8 @@
-require '${{=gem.name=}}/version'
+require '${{=project.name=}}/version'
 
 ${{=:gem.module=}}
 module ${{value}}
-  ${{recurse}}
+${{recurse}}
 end
 ${{=;gem.module=}}
 

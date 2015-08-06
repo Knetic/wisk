@@ -1,4 +1,4 @@
-require '${{=gem.name=}}'
+require '${{=project.name=}}'
 
 describe '${{=gem.module[::]=}}::${{=gem.class=}}' do
 

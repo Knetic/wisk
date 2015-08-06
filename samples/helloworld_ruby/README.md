@@ -1,4 +1,4 @@
-${{=gem.name=}}
+${{=project.name=}}
 ====
 
 A sample gem.
