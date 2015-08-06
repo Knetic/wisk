@@ -19,6 +19,7 @@ const (
 
 	PLACEHOLDER_ITERATIVE_VALUE = "${{value}}"
 	PLACEHOLDER_ITERATIVE_RECURSE = "${{recurse}}"
+	PLACEHOLDER_ITERATIVE_RECURSE_LN = "${{recurse}}\n"
 
 	archiveMarker			= ".zip"
 )
@@ -297,14 +298,24 @@ func (this *TemplatedProject) fillContentPlaceholder(parameterValues []string, c
 
 	var ret bytes.Buffer
 	var contentTemplate, replaced, current string
+	var recurseTemplate string
 	var recursive bool
 
 	// explode any inner content placeholders or regular placeholders.
 	contentTemplate = this.replaceStringParameters(contents, parameters)
-	contentTemplate	= strings.Trim(contentTemplate, " \n")
+	contentTemplate	= strings.TrimLeft(contentTemplate, " \t\n")
 
-	current = PLACEHOLDER_ITERATIVE_RECURSE
+	current = PLACEHOLDER_ITERATIVE_RECURSE_LN
 	recursive = strings.Index(contentTemplate, PLACEHOLDER_ITERATIVE_RECURSE) > 0
+
+	if(recursive) {
+
+		if(strings.Index(contentTemplate, PLACEHOLDER_ITERATIVE_RECURSE_LN) > 0) {
+			recurseTemplate = PLACEHOLDER_ITERATIVE_RECURSE_LN
+		} else {
+			recurseTemplate = PLACEHOLDER_ITERATIVE_RECURSE
+		}
+	}
 
 	// iterate over every item in the list of parameter values, replacing "${{value}}" with the current item.
 	for _, value := range parameterValues {
@@ -315,7 +326,7 @@ func (this *TemplatedProject) fillContentPlaceholder(parameterValues []string, c
 		// with the replaced value.
 		if(recursive) {
 
-			current = strings.Replace(current, PLACEHOLDER_ITERATIVE_RECURSE, replaced, 1)
+			current = strings.Replace(current, recurseTemplate, replaced, 1)
 		} else {
 			// otherwise, just append.
 			ret.WriteString(replaced)

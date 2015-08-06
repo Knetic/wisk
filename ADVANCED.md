@@ -10,7 +10,7 @@ As features emerge, further restrictions may apply. Any new feature that adds na
 
 ###How do I make package paths?
 
-Parameters can be specified as a list by seprating values with a comma, like so.
+Parameters can be specified as a list by separating values with a comma, like so.
 
     wisk -p "project.package=com,example,sample"
 
@@ -29,7 +29,7 @@ Note that if no separator is specified, the default OS path separator is used in
 A "content placeholder" can be used to create a sequence of values, each using one value from the list of a single parameter. For instance;
 
 	${{=:project.properties=}}
-	${{=_value=}}=TRUE
+	${{value}}=TRUE
 	${{=;project.properties=}}
 
 Would use each value in "project.properties" to generate a line. Given the input:
@@ -43,7 +43,7 @@ The following would be generated:
 	baz=TRUE
 	quux=TRUE
 
-However, this "content placeholder" construct can be used recursively with the `_recurse_` reserved placeholder. This is primarily useful for things like Ruby module declarations. Given the below example;
+However, this "content placeholder" construct can be used recursively with the `recurse` reserved placeholder. This is primarily useful for things like Ruby module declarations. Given the below example;
 
 	${{=:project.module=}}
 	module ${{value}}
@@ -58,10 +58,10 @@ With the parameter being;
 The result is:
 
 	module My
-		module Sample
-			module Project
-			end
-		end
+	module Sample
+	module Project
+	end
+	end
 	end
 
 ###Will this overwrite existing files?
