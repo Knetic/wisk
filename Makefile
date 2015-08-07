@@ -4,8 +4,6 @@ all: package
 export GOPATH=$(CURDIR)/
 export GOBIN=$(CURDIR)/.temp/
 
-FPM=$(shell which fpm)
-
 init: clean
 	go get ./...
 
@@ -33,11 +31,12 @@ dist: build test
 	go build -o ./.output/wisk.exe .
 
 
+
 package: dist
 
-ifndef FPM
-	echo "FPM is not installed, no packages will be made."
-	echo "https://github.com/jordansissel/fpm"
+ifeq ($(shell which fpm), )
+	@echo "FPM is not installed, no packages will be made."
+	@echo "https://github.com/jordansissel/fpm"
 	exit 1
 endif
 
