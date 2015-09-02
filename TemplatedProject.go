@@ -22,6 +22,8 @@ const (
 	PLACEHOLDER_ITERATIVE_RECURSE_LN = "${{recurse}}\n"
 
 	archiveMarker = ".zip"
+
+	MAXIMUM_BUFFERED_LENGTH = 8192
 )
 
 /*
@@ -401,6 +403,7 @@ func (this *TemplatedProject) getFolderWalker() func(string, os.FileInfo, error)
 func readRunes(input string, results chan rune) {
 
 	for _, character := range input {
+
 		results <- character
 	}
 
@@ -425,7 +428,7 @@ func readUntil(pattern string, characters chan rune) (string, bool) {
 
 		character, done = <-characters
 
-		if !done {
+		if !done || buffer.Len() > MAXIMUM_BUFFERED_LENGTH {
 			return buffer.String(), false
 		}
 
