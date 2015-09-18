@@ -380,12 +380,29 @@ func determineParameterSeparator(parameter string) (exists bool, name string, se
 */
 func (this *TemplatedProject) getFolderWalker() func(string, os.FileInfo, error) error {
 
+	var scmPaths []string
+	var scmPath bytes.Buffer
+
+	scmPath.WriteString(".git")
+	scmPath.WriteRune(os.PathSeparator)
+
+	scmPaths = []string {
+		scmPath.String(),
+	}
+
 	return func(path string, fileStat os.FileInfo, err error) error {
 
 		var file TemplatedFile
 
 		if fileStat.IsDir() {
 			return nil
+		}
+
+		// Check to see if the path is underneath an SCM root (like ".git")
+		for _, forbiddenPath := range scmPaths {
+			if(strings.Contains(path, forbiddenPath)) {
+				return nil
+			}
 		}
 
 		file = NewTemplatedFile(path, this.rootDirectory, fileStat)

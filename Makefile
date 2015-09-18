@@ -14,6 +14,10 @@ test:
 	go test
 	go test -bench=.
 
+integrate: build
+	@./.output/wisk -a ./samples/helloworld_ruby/
+	./.output/wisk helloworld_ruby ./.populatedSample	
+
 clean:
 	@rm -rf ./.output/
 
@@ -34,8 +38,6 @@ dist: build test
 	export GOOS=windows; \
 	export GOARCH=amd64; \
 	go build -o ./.output/wisk.exe .
-
-
 
 package: dist
 
