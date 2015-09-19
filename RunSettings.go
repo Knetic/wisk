@@ -20,6 +20,7 @@ type RunSettings struct {
 	inspectionRun bool
 	addRegistry   bool
 	showRegistry  bool
+	forceGenerate bool
 }
 
 /*
@@ -35,6 +36,7 @@ func FindRunSettings() (RunSettings, error) {
 	flag.BoolVar(&ret.inspectionRun, "i", false, "Whether or not to show a list of available parameters for the skeleton")
 	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path")
 	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")
+	flag.BoolVar(&ret.forceGenerate, "f", false, "Whether or not to overwrite existing files during generation")
 	flag.Parse()
 
 	ret.skeletonPath = flag.Arg(0)

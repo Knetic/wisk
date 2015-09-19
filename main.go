@@ -99,6 +99,16 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 		return
 	}
 
+	// if force wasn't specified, check to see if the destination already exists
+	if(!settings.forceGenerate) {
+
+		_, err = os.Stat(settings.targetPath)
+		if(err == nil) {
+			fmt.Println("Destination path already exists, and no '-f' option was specified. Use '-f' to overwrite existing files.")
+			return
+		}
+	}
+
 	// generate a project
 	err = project.GenerateAt(settings.targetPath, settings.parameters)
 	if err != nil {
