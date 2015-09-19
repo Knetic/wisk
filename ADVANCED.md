@@ -63,7 +63,3 @@ The result is:
 	end
 	end
 	end
-
-###Will this overwrite existing files?
-
-Yes. `wisk` will overwrite any file completely - it has no merging strategy, and does not warn you that it is going to do this. This is intentional - you may wish to use `wisk` incrementally, regenerating boilerplate project files multiple times as you update the skeleton.
