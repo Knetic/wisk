@@ -131,6 +131,16 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 			fmt.Println(value)
 		}
 	}
+
+	if project.incorrectParameters.Length() > 0 {
+
+		fmt.Println("Project generated, but some placeholders in the template were specified with a join character ('[]'), but the given parameter was not a list")
+		fmt.Println("This may mean you need to specify the following parameters as a comma-separated list")
+
+		for _, value := range project.incorrectParameters.GetSlice() {
+			fmt.Println(value)
+		}
+	}
 }
 
 func exitWith(message string, err error, code int) {

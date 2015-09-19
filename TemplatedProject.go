@@ -34,6 +34,7 @@ type TemplatedProject struct {
 	rootDirectory string
 
 	missingParameters StringSet
+	incorrectParameters StringSet
 }
 
 /*
@@ -261,6 +262,10 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 			if !exists {
 				this.missingParameters.Add(parameterName)
 			} else {
+
+				if(len(parameterValues) == 1) {
+					this.incorrectParameters.Add(parameterName)
+				}
 
 				sequence = strings.Join(parameterValues, separator)
 				resultBuffer.WriteString(sequence)
