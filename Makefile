@@ -16,7 +16,7 @@ test:
 
 integrate: build
 	@./.output/wisk -a ./samples/helloworld_ruby/
-	./.output/wisk helloworld_ruby ./.populatedSample	
+	./.output/wisk helloworld_ruby ./.populatedSample
 
 clean:
 	@rm -rf ./.output/
@@ -47,11 +47,18 @@ ifeq ($(shell which fpm), )
 	@exit 1
 endif
 
+ifeq ($(WISK_VERSION), )
+
+	@echo "No 'WISK_VERSION' was specified."
+	@echo "Export a 'WISK_VERSION' environment variable to perform a package"
+	@exit 1
+endif
+
 	fpm \
 		--log error \
 		-s dir \
 		-t deb \
-		-v 1.0 \
+		-v $(WISK_VERSION) \
 		-n wisk \
 		./.output/wisk64=/usr/local/bin/wisk
 
@@ -59,7 +66,7 @@ endif
 		--log error \
 		-s dir \
 		-t deb \
-		-v 1.0 \
+		-v $(WISK_VERSION) \
 		-n wisk \
 		-a i686 \
 		./.output/wisk32=/usr/local/bin/wisk
@@ -70,14 +77,14 @@ endif
 		--log error \
 		-s dir \
 		-t rpm \
-		-v 1.0 \
+		-v $(WISK_VERSION) \
 		-n wisk \
 		./.output/wisk64=/usr/local/bin/wisk
 	fpm \
 		--log error \
 		-s dir \
 		-t rpm \
-		-v 1.0 \
+		-v $(WISK_VERSION) \
 		-n wisk \
 		-a i686 \
 		./.output/wisk32=/usr/local/bin/wisk
