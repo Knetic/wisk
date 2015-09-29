@@ -6,4 +6,4 @@ ${{recurse}}
 end
 ${{=;gem.module=}}
 
-${{=gem.module[::]=}}.VERSION = '1.0.0'
+${{=gem.module[::]=}}::VERSION = '1.0.0'

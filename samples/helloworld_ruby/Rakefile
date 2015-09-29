@@ -1,1 +1,20 @@
 require 'bundler/gem_tasks'
+require '${{=project.name=}}/version'
+
+task :default => [:build]
+
+task :build => [:test] do
+  system("gem build ${{=project.name=}}.gemspec")
+end
+
+task :test => [:prepare] do
+  system("bundle exec rspec")
+end
+
+task :push => [:build] do
+  system("gem inabox ./${{=project.name=}}-#{${{=gem.module[::]=}}::VERSION}.gem")
+end
+
+task :prepare do
+  system("bundle install")
+end
