@@ -61,7 +61,8 @@ endif
 		-v $(WISK_VERSION) \
 		-n wisk \
 		./.output/wisk64=/usr/local/bin/wisk \
-		./docs/wisk.7=/usr/share/man/man7/wisk.7
+		./docs/wisk.7=/usr/share/man/man7/wisk.7 \
+		./autocomplete/wisk=/etc/bash_completion.d/wisk
 
 	fpm \
 		--log error \
@@ -71,7 +72,8 @@ endif
 		-n wisk \
 		-a i686 \
 		./.output/wisk32=/usr/local/bin/wisk \
-		./docs/wisk.7=/usr/share/man/man7/wisk.7
+		./docs/wisk.7=/usr/share/man/man7/wisk.7 \
+		./autocomplete/wisk=/etc/bash_completion.d/wisk
 
 	@mv ./*.deb ./.output/
 
@@ -82,7 +84,9 @@ endif
 		-v $(WISK_VERSION) \
 		-n wisk \
 		./.output/wisk64=/usr/local/bin/wisk \
-		./docs/wisk.7=/usr/share/man/man7/wisk.7
+		./docs/wisk.7=/usr/share/man/man7/wisk.7 \
+		./autocomplete/wisk=/etc/bash_completion.d/wisk
+
 	fpm \
 		--log error \
 		-s dir \
@@ -91,6 +95,7 @@ endif
 		-n wisk \
 		-a i686 \
 		./.output/wisk32=/usr/local/bin/wisk \
-		./docs/wisk.7=/usr/share/man/man7/wisk.7
+		./docs/wisk.7=/usr/share/man/man7/wisk.7 \
+		./autocomplete/wisk=/etc/bash_completion.d/wisk
 
 	@mv ./*.rpm ./.output/

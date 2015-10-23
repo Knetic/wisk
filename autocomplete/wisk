@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# Provides autocomplete functionality for wisk.
+
+completion()
+{
+	local current=${COMP_WORDS[${COMP_CWORD}]}
+
+	findArgCount
+	determineEndFlags
+
+	# Flag list.
+	if [[ ${HAS_FLAGS} == false || "${current}" == -* ]];
+	then
+		local flags="-i -l -a -p"
+		COMPREPLY=($(compgen -W "${flags}" -- ${current}))
+		return
+	fi
+
+	# Projects list
+	if [[ ${CAN_LIST_PROJECTS} == true && "${COMP_POSITIONALS}" == 0 ]];
+	then
+		local projects=$(wisk -l)
+		COMPREPLY=($(compgen -W "${projects}" -- $current))
+		return
+	fi
+
+	# Directory target
+	if [[ ${CAN_LIST_DIRECTORIES} == true ]];
+	then
+		COMPREPLY=($(compgen -f "${current}"))
+		return
+	fi
+}
+
+# Finds the amount of positional args in "COMP_LINE", setting "COMP_POSITIONALS" to the result.
+findArgCount()
+{
+	local result=-1
+	local skip=false
+
+	for word in "${COMP_WORDS[@]}"
+	do
+		if [[ ${word} == [[:space:]] ]];
+		then
+			continue
+		fi
+
+		if [[ ${skip} == true ]];
+		then
+			skip=false
+			continue
+		fi
+
+		if [[ "${word}" == -* ]];
+		then
+			skip=true
+			continue
+		fi
+
+		result=$(expr "${result}" + 1)
+	done
+
+	COMP_POSITIONALS=${result}
+}
+
+# Determines if the "COMP_WORDS" contains an "end" flag, or a flag that should not be followed by positional arguments.
+determineEndFlags()
+{
+	HAS_FLAGS=false
+	CAN_LIST_PROJECTS=true
+	CAN_LIST_DIRECTORIES=true
+
+	for word in "${COMP_WORDS[@]}"
+	do
+		if [[ "${word}" == -* ]];
+		then
+			HAS_FLAGS=true
+		fi
+
+		if [[ "${word}" == "-l" ]];
+		then
+			CAN_LIST_DIRECTORIES=false
+			CAN_LIST_PROJECTS=false
+			return
+		fi
+
+		if [[ "${word}" == "-a" ]];
+		then
+			CAN_LIST_PROJECTS=false
+			return
+		fi
+
+		if [[ "${word}" == "-i" ]];
+		then
+			CAN_LIST_DIRECTORIES=false
+			return
+		fi
+	done
+}
+
+complete -F completion wisk
