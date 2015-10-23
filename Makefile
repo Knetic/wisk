@@ -60,7 +60,8 @@ endif
 		-t deb \
 		-v $(WISK_VERSION) \
 		-n wisk \
-		./.output/wisk64=/usr/local/bin/wisk
+		./.output/wisk64=/usr/local/bin/wisk \
+		./docs/wisk.7=/usr/share/man/man7/wisk.7
 
 	fpm \
 		--log error \
@@ -69,7 +70,8 @@ endif
 		-v $(WISK_VERSION) \
 		-n wisk \
 		-a i686 \
-		./.output/wisk32=/usr/local/bin/wisk
+		./.output/wisk32=/usr/local/bin/wisk \
+		./docs/wisk.7=/usr/share/man/man7/wisk.7
 
 	@mv ./*.deb ./.output/
 
@@ -79,7 +81,8 @@ endif
 		-t rpm \
 		-v $(WISK_VERSION) \
 		-n wisk \
-		./.output/wisk64=/usr/local/bin/wisk
+		./.output/wisk64=/usr/local/bin/wisk \
+		./docs/wisk.7=/usr/share/man/man7/wisk.7
 	fpm \
 		--log error \
 		-s dir \
@@ -87,6 +90,7 @@ endif
 		-v $(WISK_VERSION) \
 		-n wisk \
 		-a i686 \
-		./.output/wisk32=/usr/local/bin/wisk
+		./.output/wisk32=/usr/local/bin/wisk \
+		./docs/wisk.7=/usr/share/man/man7/wisk.7
 
 	@mv ./*.rpm ./.output/

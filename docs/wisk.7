@@ -1,0 +1,144 @@
+.TH wisk 7 "2015-10-22" "version 1.5"
+
+.SH NAME
+wisk
+
+.SH SYNOPSIS
+
+Create projects from parameterized templates
+
+.SH DESCRIPTION
+
+wisk creates projects from parameterized templates.
+
+.SH OPTIONS
+
+wisk [-p] [-l] [-a] [-i] <path/to/skeleton> <path/to/destination>
+
+Usage:
+
+.IP -l
+Causes the program to list all registered templates by name, then immediately exit.
+.IP -i
+Causes the program to inspect the given skeleton (by positional argument 1), print out all of that skeleton's possible parameters, then exit.
+.IP -a
+Causes the program to register the given path (by positional argument 1) as a template. If the path is a *.zip file, it is added to the user's skeleton registry as-is. If the path is a directory, that directory is zipped and added to the user's skeleton registry. In no case will this command ever modify the given directory.
+.IP -p
+Specifies parameters to be used when populating the target project. See "Parameters" for details.
+
+.SH PARAMETERS
+Parameters given to the "-p" flag are expected to be key=value format inside a single string, semicolon-delimited. Example below:
+
+.RS
+.br
+wisk -p "project.param.1=something; project.param.2=foobar"
+.RE
+
+Parameters can be specified as a list by comma-delimiting values. The following example would define "project.list" as a list of values,
+equalling ["foo", "bar", "baz", "quux"]
+
+.RS
+.br
+wisk -p "project.list=foo,bar,baz,quux"
+.RE
+
+.SH PLACEHOLDERS
+
+Placeholders inside of project skeletons should be in the following format:
+
+.RS
+.br
+${{=parameter=}}
+.RE
+
+By convention, parameter names are dot-namespaced. Best practice is to never camelCase, snake-case, or flat_case parameter names. 
+Use a namespace approach such as "project.name".
+
+Placeholders can begin with numbers, unlike other frameworks. 
+Parameters must not contain square brackets, semicolon, comma, or equals sign ( [ ] ; , = ), and must not begin with a colon ( : ).
+
+.SH PARAMETER JOINS
+
+Placeholders can specify a join character for lists by using the square brackets:
+
+.RS
+.br
+${{=parameter[::]=}}
+.RE
+
+If that skeleton was given a "parameter" value of "foo,bar,baz,quux", the resulting written value would be "foo::bar::baz::quux".
+
+.SH CONTENT AND RECURSIVE PLACEHOLDERS
+A "content placeholder" can be used to create a sequence of values, each using one value from the list of a single parameter. For instance;
+
+.RS
+.br
+${{=:project.properties=}}
+.br
+${{value}}=TRUE
+.br
+${{=;project.properties=}}
+.RE
+
+Would use each value in "project.properties" to generate a line. Given the input:
+
+.RS
+.br
+wisk -p "project.properties=foo,bar,baz,quux"
+.RE
+
+The following would be generated:
+
+.RS
+.br
+foo=TRUE
+.br
+bar=TRUE
+.br
+baz=TRUE
+.br
+quux=TRUE
+.RE
+
+However, this "content placeholder" construct can be used recursively with the recurse reserved placeholder. This is primarily useful for things like Ruby module declarations. Given the below example;
+
+.RS
+.br
+${{=:project.module=}}
+.br
+module ${{value}}
+.br
+${{recurse}}
+.br
+end
+.br
+${{=;project.module=}}
+.RE
+
+With the parameter being;
+
+.RS
+.br
+wisk -p "project.module=My,Sample,Project"
+.RE
+
+The result is:
+
+.RS
+.br
+module My
+.br	
+module Sample
+.br	
+module Project
+.br	
+end
+.br	
+end
+.br	
+end
+.RE
+
+.SH AUTHOR
+George Lester (glester491@gmail.com)
+https://github.com/Knetic/wisk
