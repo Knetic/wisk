@@ -19,6 +19,14 @@ func main() {
 		return
 	}
 
+	if(settings.flagList) {
+
+		for _, flag := range FLAGS {
+			fmt.Println(flag)
+		}
+		return
+	}
+
 	registry = NewTemplateRegistry()
 
 	// is the user showing the registry?

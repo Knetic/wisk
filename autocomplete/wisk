@@ -12,7 +12,7 @@ completion()
 	# Flag list.
 	if [[ ${HAS_FLAGS} == false || "${current}" == -* ]];
 	then
-		local flags="-i -l -a -p"
+		local flags=$(wisk -flags)
 		COMPREPLY=($(compgen -W "${flags}" -- ${current}))
 		return
 	fi

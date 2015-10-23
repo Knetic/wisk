@@ -21,6 +21,17 @@ type RunSettings struct {
 	addRegistry   bool
 	showRegistry  bool
 	forceGenerate bool
+
+	flagList			bool
+}
+
+var FLAGS = []string{
+	"-p",
+	"-i",
+	"-a",
+	"-l",
+	"-f",
+	"-flags",
 }
 
 /*
@@ -37,20 +48,24 @@ func FindRunSettings() (RunSettings, error) {
 	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path")
 	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")
 	flag.BoolVar(&ret.forceGenerate, "f", false, "Whether or not to overwrite existing files during generation")
+	flag.BoolVar(&ret.flagList, "flags", false, "Whether or not to list the flags")
 	flag.Parse()
 
 	ret.skeletonPath = flag.Arg(0)
 	ret.targetPath = flag.Arg(1)
 
+	if(ret.flagList || ret.showRegistry) {
+		return ret, nil
+	}
+
 	// if we're not just showing the registry, and not skeleton path is specified...
-	if !ret.showRegistry && ret.skeletonPath == "" {
+	if ret.skeletonPath == "" {
 		errorMsg := fmt.Sprintf("Skeleton project path not specified")
 		return ret, errors.New(errorMsg)
 	}
 
 	// if we're actually generating a project, and no target path is specified...
-	if !ret.showRegistry &&
-		!ret.inspectionRun &&
+	if !ret.inspectionRun &&
 		!ret.addRegistry &&
 		ret.targetPath == "" {
 
