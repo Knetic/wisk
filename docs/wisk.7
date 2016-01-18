@@ -22,7 +22,7 @@ Causes the program to list all registered templates by name, then immediately ex
 .IP -i
 Causes the program to inspect the given skeleton (by positional argument 1), print out all of that skeleton's possible parameters, then exit.
 .IP -a
-Causes the program to register the given path (by positional argument 1) as a template. If the path is a *.zip file, it is added to the user's skeleton registry as-is. If the path is a directory, that directory is zipped and added to the user's skeleton registry. In no case will this command ever modify the given directory.
+Causes the program to register the given path (by positional argument 1) as a template. If the path is a *.zip file, it is added to the user's skeleton registry as-is. If the path is a directory, that directory is zipped and added to the user's skeleton registry. If the path is prefixed with 'http://' or 'https://', the remote archive will be downloaded and registered. In no case will this command ever modify the given directory.
 .IP -p
 Specifies parameters to be used when populating the target project. See "Parameters" for details.
 .IP -f

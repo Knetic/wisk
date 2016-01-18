@@ -6,7 +6,10 @@ import (
 	"github.com/jhoonb/archivex"
 	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
+	"net/http"
 	"os"
+	"net/url"
+	"io"
 	"path/filepath"
 	"strings"
 )
@@ -112,6 +115,15 @@ func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
 	var targetPath, name string
 	var err error
 
+	// if this is a remote path, download as a zip to a temporary directory before trying to register.
+	if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
+
+		path, err = downloadArchive(path)
+		if(err != nil) {
+			return "", err
+		}
+	}
+
 	// if the given path is a directory (not a zip file),
 	// archive it and prepare for registration.
 	if !strings.HasSuffix(path, archiveMarker) {
@@ -127,6 +139,57 @@ func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
 
 	_, err = CopyFile(path, targetPath)
 	return name, err
+}
+
+/*
+	Downloads the given [url] to a temporary directory (as a .zip).
+	Returns the temporary path to the downloaded archive, or an error if it encountered one.
+*/
+func downloadArchive(targetURL string) (string, error) {
+
+	var response *http.Response
+	var outputFile *os.File
+	var parsedURL *url.URL
+	var outputPath string
+	var baseName string
+	var err error
+
+	outputPath, err = ioutil.TempDir("", "wiskRemoteArchive")
+	if(err != nil) {
+		return "", err
+	}
+
+	parsedURL, err = url.Parse(targetURL)
+	if(err != nil) {
+		return "", err
+	}
+
+	baseName = filepath.Base(parsedURL.Path)
+	baseName = strings.TrimSuffix(baseName, filepath.Ext(baseName))
+	outputPath = filepath.Join(outputPath, baseName + ".zip")
+	outputPath, _ = filepath.Abs(outputPath)
+
+	outputFile, err = os.Create(outputPath)
+	if(err != nil) {
+		return "", err
+	}
+	defer outputFile.Close()
+
+	response, err = http.Get(targetURL)
+	if(err != nil) {
+		return "", err
+	}
+
+	if(response.Status != "200") {
+		errorMsg := fmt.Sprintf("Unable to download remote archive: HTTP %s\n", response.Status)
+		return "", errors.New(errorMsg)
+	}
+
+	_, err = io.Copy(outputFile, response.Body)
+	if(err != nil) {
+		return "", err
+	}
+	return outputPath, nil
 }
 
 func archivePath(path string) (string, error) {

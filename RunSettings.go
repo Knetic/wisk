@@ -55,7 +55,7 @@ func FindRunSettings() (RunSettings, error) {
 
 	flag.StringVar(&parameterGroup, "p", "", "Semicolon-separated list of parameters in k=v form.")
 	flag.BoolVar(&ret.inspectionRun, "i", false, "Whether or not to show a list of available parameters for the skeleton")
-	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path")
+	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path (can be http/https URLs)")
 	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")
 	flag.BoolVar(&forceGenerate, "f", false, "Whether or not to overwrite existing files during generation")
 	flag.BoolVar(&forceDelete, "d", false, "Whether or not to delete every existing file in the output path first (only valid when -f is specified)")
