@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"path/filepath"
+	"time"
 	"strings"
 )
 
@@ -105,6 +106,7 @@ func FindRunSettings() (RunSettings, error) {
 	// make parameters, set default project.name
 	ret.parameters = make(map[string][]string)
 	ret.parameters["project.name"] = []string{filepath.Base(ret.targetPath)}
+	ret.parameters["project.createdDate"] = []string{time.Now().Format("2006-01-02")}
 
 	err = parseParametersTo(parameterGroup, ret.parameters)
 	if err != nil {
