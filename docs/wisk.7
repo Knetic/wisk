@@ -13,7 +13,7 @@ wisk creates projects from parameterized templates.
 
 .SH OPTIONS
 
-wisk [-p] [-l] [-a] [-i] <path/to/skeleton> <path/to/destination>
+wisk [-p] [-l] [-a] [-i] [-f] [-d] <path/to/skeleton> <path/to/destination>
 
 Usage:
 
@@ -25,6 +25,10 @@ Causes the program to inspect the given skeleton (by positional argument 1), pri
 Causes the program to register the given path (by positional argument 1) as a template. If the path is a *.zip file, it is added to the user's skeleton registry as-is. If the path is a directory, that directory is zipped and added to the user's skeleton registry. In no case will this command ever modify the given directory.
 .IP -p
 Specifies parameters to be used when populating the target project. See "Parameters" for details.
+.IP -f
+Causes the program to overwrite any existing files in the output directory.
+.IP -d
+If used with -f, causes the program to delete the output directory (if it exists) before trying to generate the project.
 
 .SH PARAMETERS
 Parameters given to the "-p" flag are expected to be key=value format inside a single string, semicolon-delimited. Example below:
@@ -51,10 +55,10 @@ Placeholders inside of project skeletons should be in the following format:
 ${{=parameter=}}
 .RE
 
-By convention, parameter names are dot-namespaced. Best practice is to never camelCase, snake-case, or flat_case parameter names. 
+By convention, parameter names are dot-namespaced. Best practice is to never camelCase, snake-case, or flat_case parameter names.
 Use a namespace approach such as "project.name".
 
-Placeholders can begin with numbers, unlike other frameworks. 
+Placeholders can begin with numbers, unlike other frameworks.
 Parameters must not contain square brackets, semicolon, comma, or equals sign ( [ ] ; , = ), and must not begin with a colon ( : ).
 
 .SH PARAMETER JOINS
@@ -127,15 +131,15 @@ The result is:
 .RS
 .br
 module My
-.br	
+.br
 module Sample
-.br	
+.br
 module Project
-.br	
+.br
 end
-.br	
+.br
 end
-.br	
+.br
 end
 .RE
 

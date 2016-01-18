@@ -107,13 +107,23 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 		return
 	}
 
-	// if force wasn't specified, check to see if the destination already exists
-	if(!settings.forceGenerate) {
+	// check to see if the destination exists
+	_, err = os.Stat(settings.targetPath)
+	if(err == nil) {
 
-		_, err = os.Stat(settings.targetPath)
-		if(err == nil) {
+		// if we force-generate, see which type of force generation to do (delete or overwrite)
+		switch settings.forceGenerate {
+		case GENERATE_NONE:
 			fmt.Println("Destination path already exists, and no '-f' option was specified. Use '-f' to overwrite existing files.")
 			return
+		case GENERATE_DELETE:
+			err = os.RemoveAll(settings.targetPath)
+			if(err != nil) {
+				exitWith("Unable to delete existing files in the given output directory: %s\n", err, 1)
+				return
+			}
+		default:
+			break
 		}
 	}
 

@@ -20,10 +20,18 @@ type RunSettings struct {
 	inspectionRun bool
 	addRegistry   bool
 	showRegistry  bool
-	forceGenerate bool
+	forceGenerate GenerateMode
 
-	flagList			bool
+	flagList	  bool
 }
+
+type GenerateMode uint8
+
+const (
+	GENERATE_NONE GenerateMode = iota
+	GENERATE_OVERWRITE
+	GENERATE_DELETE
+)
 
 var FLAGS = []string{
 	"-p",
@@ -31,6 +39,7 @@ var FLAGS = []string{
 	"-a",
 	"-l",
 	"-f",
+	"-w",
 	"-flags",
 }
 
@@ -41,13 +50,15 @@ func FindRunSettings() (RunSettings, error) {
 
 	var ret RunSettings
 	var parameterGroup string
+	var forceGenerate, forceDelete bool
 	var err error
 
 	flag.StringVar(&parameterGroup, "p", "", "Semicolon-separated list of parameters in k=v form.")
 	flag.BoolVar(&ret.inspectionRun, "i", false, "Whether or not to show a list of available parameters for the skeleton")
 	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path")
 	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")
-	flag.BoolVar(&ret.forceGenerate, "f", false, "Whether or not to overwrite existing files during generation")
+	flag.BoolVar(&forceGenerate, "f", false, "Whether or not to overwrite existing files during generation")
+	flag.BoolVar(&forceDelete, "d", false, "Whether or not to delete every existing file in the output path first (only valid when -f is specified)")
 	flag.BoolVar(&ret.flagList, "flags", false, "Whether or not to list the flags")
 	flag.Parse()
 
@@ -71,6 +82,17 @@ func FindRunSettings() (RunSettings, error) {
 
 		errorMsg := fmt.Sprintf("Target output path not specified")
 		return ret, errors.New(errorMsg)
+	}
+
+	// set up overwrite strategy
+	if(forceGenerate) {
+		if(forceDelete) {
+			ret.forceGenerate = GENERATE_DELETE
+		} else {
+			ret.forceGenerate = GENERATE_OVERWRITE
+		}
+	} else {
+		ret.forceGenerate = GENERATE_NONE
 	}
 
 	// make parameters, set default project.name
