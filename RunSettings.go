@@ -17,6 +17,9 @@ type RunSettings struct {
 	skeletonPath string
 	targetPath   string
 
+	basicAuthUser string
+	basicAuthPass string
+
 	inspectionRun bool
 	addRegistry   bool
 	showRegistry  bool
@@ -40,6 +43,8 @@ var FLAGS = []string{
 	"-l",
 	"-f",
 	"-w",
+	"-bu",
+	"-bp",
 	"-flags",
 }
 
@@ -54,6 +59,8 @@ func FindRunSettings() (RunSettings, error) {
 	var err error
 
 	flag.StringVar(&parameterGroup, "p", "", "Semicolon-separated list of parameters in k=v form.")
+	flag.StringVar(&ret.basicAuthUser, "bu", "", "The 'user' to use when a remote archive requests Basic Authentication")
+	flag.StringVar(&ret.basicAuthPass, "bp", "", "The 'password' to use when a remote archive requests Basic Authentication")
 	flag.BoolVar(&ret.inspectionRun, "i", false, "Whether or not to show a list of available parameters for the skeleton")
 	flag.BoolVar(&ret.addRegistry, "a", false, "Whether or not to register the template at the given path (can be http/https URLs)")
 	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")

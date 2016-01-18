@@ -56,7 +56,7 @@ func addRegistry(settings RunSettings, registry *TemplateRegistry) {
 	var name string
 	var err error
 
-	name, err = registry.RegisterTemplate(settings.skeletonPath)
+	name, err = registry.RegisterTemplate(settings.skeletonPath, settings.basicAuthUser, settings.basicAuthPass)
 	if err != nil {
 
 		// TODO: I'm deeply uncomfortable with using "exitWith" outside of the actual

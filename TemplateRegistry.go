@@ -109,8 +109,11 @@ func (this TemplateRegistry) GetTemplatePath(name string) (string, error) {
   Registers the given [path] in the registry, by copying the archive file to it.
   If the file is not an archive, or it cannot be read, or the registry cannot be written,
   an error is returned.
+  If the given [path] is remote (such as http), and if the server requires authentication,
+  the given [username] and [password] will be used.
+  If the path is local, username/password are inconsequential.
 */
-func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
+func (this *TemplateRegistry) RegisterTemplate(path string, username string, password string) (string, error) {
 
 	var targetPath, name string
 	var err error
@@ -118,7 +121,7 @@ func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
 	// if this is a remote path, download as a zip to a temporary directory before trying to register.
 	if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
 
-		path, err = downloadArchive(path)
+		path, err = downloadArchive(path, username, password)
 		if(err != nil) {
 			return "", err
 		}
@@ -145,9 +148,11 @@ func (this *TemplateRegistry) RegisterTemplate(path string) (string, error) {
 	Downloads the given [url] to a temporary directory (as a .zip).
 	Returns the temporary path to the downloaded archive, or an error if it encountered one.
 */
-func downloadArchive(targetURL string) (string, error) {
+func downloadArchive(targetURL string, username string, password string) (string, error) {
 
+	var request *http.Request
 	var response *http.Response
+	var client http.Client
 	var outputFile *os.File
 	var parsedURL *url.URL
 	var outputPath string
@@ -164,6 +169,12 @@ func downloadArchive(targetURL string) (string, error) {
 		return "", err
 	}
 
+	request, err = http.NewRequest("GET", targetURL, nil)
+	if(err != nil) {
+		return "", err
+	}
+	request.SetBasicAuth(username, password)
+
 	baseName = filepath.Base(parsedURL.Path)
 	baseName = strings.TrimSuffix(baseName, filepath.Ext(baseName))
 	outputPath = filepath.Join(outputPath, baseName + ".zip")
@@ -175,12 +186,12 @@ func downloadArchive(targetURL string) (string, error) {
 	}
 	defer outputFile.Close()
 
-	response, err = http.Get(targetURL)
+	response, err = client.Do(request)
 	if(err != nil) {
 		return "", err
 	}
 
-	if(response.Status != "200") {
+	if(!strings.Contains(response.Status, "200")) {
 		errorMsg := fmt.Sprintf("Unable to download remote archive: HTTP %s\n", response.Status)
 		return "", errors.New(errorMsg)
 	}
