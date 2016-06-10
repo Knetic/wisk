@@ -10,10 +10,12 @@ type StringSet struct {
 /*
   Adds a string to this set, if it does not already exist in the set.
 */
-func (this *StringSet) Add(item string) {
+func (this *StringSet) Add(items... string) {
 
-	if !this.Contains(item) {
-		this.values = append(this.values, item)
+	for _, item := range items {
+		if !this.Contains(item) {
+			this.values = append(this.values, item)
+		}
 	}
 }
 

@@ -128,55 +128,66 @@ func (this *TemplatedProject) GenerateAt(targetPath string, parameters map[strin
 */
 func (this TemplatedProject) FindParameters() ([]string, error) {
 
-	var parameters StringSet
 	var file TemplatedFile
+	var parameters StringSet
 	var contentBytes []byte
-	var characters chan rune
-	var inputPath, sequence string
+	var inputPath string
 	var err error
-	var exists bool
 
 	for _, file = range this.files {
 
 		inputPath = (this.rootDirectory + file.path)
+		parameters.Add(this.findParametersInString(file.path)...)
 
 		contentBytes, err = ioutil.ReadFile(inputPath)
 		if err != nil {
 			return nil, err
 		}
 
-		characters = make(chan rune)
-		go readRunes(string(contentBytes), characters)
-
-		for {
-
-			sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
-			if !exists {
-				break
-			}
-
-			// read a parameter, then replace it.
-			sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
-			if !exists {
-				break
-			}
-
-			// content placeholder?
-			if sequence[0:1] == ":" || sequence[0:1] == ";" {
-				sequence = sequence[1:len(sequence)]
-			}
-
-			// joined list?
-			index := strings.LastIndex(sequence, PARAMETER_JOIN_OPEN)
-			if index > 0 {
-				sequence = sequence[0:index]
-			}
-
-			parameters.Add(sequence)
-		}
+		parameters.Add(this.findParametersInString(string(contentBytes))...)
 	}
 
 	return parameters.GetSlice(), nil
+}
+
+func (this *TemplatedProject) findParametersInString(target string) []string {
+
+	var parameters StringSet
+	var characters chan rune
+	var sequence string
+	var exists bool
+
+	characters = make(chan rune)
+	go readRunes(target, characters)
+
+	for {
+
+		sequence, exists = readUntil(PLACEHOLDER_OPEN, characters)
+		if !exists {
+			break
+		}
+
+		// read a parameter, then replace it.
+		sequence, exists = readUntil(PLACEHOLDER_CLOSE, characters)
+		if !exists {
+			break
+		}
+
+		// content placeholder?
+		if sequence[0:1] == ":" || sequence[0:1] == ";" {
+			sequence = sequence[1:len(sequence)]
+		}
+
+		// joined list?
+		index := strings.LastIndex(sequence, PARAMETER_JOIN_OPEN)
+		if index > 0 {
+			sequence = sequence[0:index]
+		}
+
+		parameters.Add(sequence)
+	}
+
+	return parameters.GetSlice()
 }
 
 /*
