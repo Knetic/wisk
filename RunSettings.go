@@ -25,6 +25,7 @@ type RunSettings struct {
 	addRegistry   bool
 	showRegistry  bool
 	forceGenerate GenerateMode
+	blankParameters bool
 
 	flagList	  bool
 }
@@ -44,6 +45,7 @@ var FLAGS = []string{
 	"-l",
 	"-f",
 	"-w",
+	"-b",
 	"-bu",
 	"-bp",
 	"-flags",
@@ -67,6 +69,7 @@ func FindRunSettings() (RunSettings, error) {
 	flag.BoolVar(&ret.showRegistry, "l", false, "Whether or not to show a list of all available registered templates")
 	flag.BoolVar(&forceGenerate, "f", false, "Whether or not to overwrite existing files during generation")
 	flag.BoolVar(&forceDelete, "d", false, "Whether or not to delete every existing file in the output path first (only valid when -f is specified)")
+	flag.BoolVar(&ret.blankParameters, "b", false, "Whether or not to replace unspecified parameters with blank strings")
 	flag.BoolVar(&ret.flagList, "flags", false, "Whether or not to list the flags")
 	flag.Parse()
 

@@ -134,20 +134,24 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 		return
 	}
 
-	// if there's a post-generate script (and it's executable), call it.
-	err = executePostGenerate(project.rootDirectory, settings.targetPath)
-	if err != nil {
-		exitWith("Unable to complete post-generation script: %s\n", err, 1)
-		return
-	}
-
 	// if everything succeeded, but we had missing parameters, make a note of it to the user.
 	if project.missingParameters.Length() > 0 {
-		fmt.Printf("Project generated, but some parameters were not specified, and have been left blank:\n")
+
+		if(settings.blankParameters) {
+
+			// if blank parameters are allowed, print a message about how blank parameters were used.
+			fmt.Printf("Project generated, but some parameters were not specified, and have been left blank:\n")
+		} else {
+
+			// if blank parameters are not allowed, delete the generated project.
+			fmt.Printf("Project cannot be generated, some parameters were not specified:\n")
+			os.RemoveAll(settings.targetPath)
+		}
 
 		for _, value := range project.missingParameters.GetSlice() {
 			fmt.Println(value)
 		}
+		return
 	}
 
 	if project.incorrectParameters.Length() > 0 {
@@ -158,6 +162,13 @@ func createProject(settings RunSettings, registry *TemplateRegistry) {
 		for _, value := range project.incorrectParameters.GetSlice() {
 			fmt.Println(value)
 		}
+	}
+
+	// if there's a post-generate script (and it's executable), call it.
+	err = executePostGenerate(project.rootDirectory, settings.targetPath)
+	if err != nil {
+		exitWith("Unable to complete post-generation script: %s\n", err, 1)
+		return
 	}
 }
 
