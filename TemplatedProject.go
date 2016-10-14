@@ -22,8 +22,6 @@ const (
 	PLACEHOLDER_ITERATIVE_RECURSE_LN = "${{recurse}}\n"
 
 	archiveMarker = ".zip"
-
-	MAXIMUM_BUFFERED_LENGTH = 8192
 )
 
 /*
@@ -235,7 +233,6 @@ func (this *TemplatedProject) replaceFileContents(inPath, outPath string, mode o
 */
 func (this *TemplatedProject) replaceStringParameters(input string, parameters map[string][]string) string {
 
-	var resultBuffer bytes.Buffer
 	var characters chan rune
 	var sequence, separator, parameterName string
 	var parameterValues []string
@@ -243,6 +240,8 @@ func (this *TemplatedProject) replaceStringParameters(input string, parameters m
 
 	characters = make(chan rune)
 	go readRunes(input, characters)
+
+	resultBuffer := bytes.NewBuffer([]byte{})
 
 	for {
 
@@ -451,17 +450,18 @@ func readRunes(input string, results chan rune) {
 */
 func readUntil(pattern string, characters chan rune) (string, bool) {
 
-	var buffer bytes.Buffer
 	var sequence string
 	var character rune
 	var index int
 	var done bool
 
+	buffer := bytes.NewBuffer([]byte{})
+
 	for {
 
 		character, done = <-characters
 
-		if !done || buffer.Len() > MAXIMUM_BUFFERED_LENGTH {
+		if !done {
 			return buffer.String(), false
 		}
 
