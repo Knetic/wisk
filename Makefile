@@ -99,3 +99,19 @@ endif
 		./autocomplete/wisk=/etc/bash_completion.d/wisk
 
 	@mv ./*.rpm ./.output/
+
+dockerTest:
+ifeq ($(shell which docker), )
+	@echo "Docker is not installed."
+	@exit 1
+endif
+
+containerized_build: dockerTest
+
+	docker run \
+		--rm \
+		-v "$(CURDIR)":"/srv/build":rw \
+		-e ALT_VERSION=$(SEEDSTATS_VERSION) \
+		golang:1.13 \
+		bash -c \
+		"cd /srv/build; make build"
